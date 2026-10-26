@@ -27,6 +27,11 @@
   color: var(--text-main);
 }
 
+.bf-target-note {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
 .bf-families {
   display: flex;
   gap: 3px;

@@ -1,7 +1,7 @@
 # Spec: Block Fit Mode
 
 **Date:** 2026-10-26
-**Status:** Shipped (first version)
+**Status:** Shipped. Hours rule revised 2026-10-26 (week-based ranges, below)
 
 ---
 
@@ -51,20 +51,27 @@ Late Start 15/14 weeks and Summer 4-week sessions have no blocks; the picker say
 
 Inputs: lecture/lab units, the block's days, start, end, and meetings per weekday (`meetingsPerWeekday`, so holidays count wherever the attendance rules say they do).
 
-1. **Candidates per component.** Every way to meet the term's contact hours (`units × 18` / `units × 54`) on any subset of the block's days, using at most two distinct per-day values (more is more meeting patterns than anyone wants). Each meeting is ≥ 1.0 CH. A candidate is kept only if the generator's custom-split check accepts it — the same arithmetic, so nothing Block Fit offers is rejected later.
-2. **Pairing.** Lecture runs first from the block start; on a day with both, the lab follows after the usual 10-minute break (same as the generator). Every block day must be used.
-3. **Hours range.** Each component's term hours should land between 2% under and 1% over the catalog's (54 → 52.9–54.5; 54.4 is fine, 55 is pushing what's legally allowed). Placements in range always win, even if they run past the block. Only when none exists does it fall back to anything the generator accepts, and the result is flagged ("hrs!" on the chip, a warning on the schedule). Small components often can't land in range: 0.1 CH × 17 meetings = 1.7 hrs per step, so 1 lecture unit on a full term is 17.0 or 18.7 hrs (the same 18.7 Manual mode gives).
+1. **Hours range** (`src/utils/blockHours.ts`). Block Fit output is an estimate, so each component (lecture, lab) only has to land near a target. A *week* = 1/18 of that component's catalog hours (`units × 18` / `units × 54`).
+
+   | Session | Target | Accepted |
+   |---|---|---|
+   | Full-term fall/spring (`semester` + `FULL_TERM`) | catalog hours | target ± 1 week |
+   | Everything shorter (late start, 8/6-week, winter, summer) | catalog − 1 week | target − 1.5 weeks … target + 0.5 week |
+
+   E.g. 54 hrs: full term 51–57 (aim 54); short session 46.5–52.5 (aim 51). The "1.5 weeks under" is measured from the target (chosen in the absence of a firmer rule — it's one constant in `blockHours.ts`).
+2. **Candidates per component.** Every way to land in the range on any subset of the block's days, using at most two distinct per-day values (more is more meeting patterns than anyone wants). Each meeting is ≥ 1.0 CH.
+3. **Pairing.** Lecture runs first from the block start; on a day with both, the lab follows after the usual 10-minute break (same as the generator). Every block day must be used.
 4. **Ranking** (lower is better, in order):
    1. minutes past the block end on the worst day,
    2. total minutes past the end,
    3. meeting patterns (distinct start/end per component),
-   4. distance from the required hours,
-   5. hours short of required,
+   4. distance from the target hours,
+   5. hours short of the target,
    6. spread between the days' end times,
    7. lecture earlier in the week (how these are built by hand).
 5. **Doesn't fit:** the best answer is still returned, with its overrun ("closest fit"), up to 120 minutes over. Beyond that, or when the course can't meet the 1.0 CH minimum on every block day, an error explains why.
 
-Speed: the search runs with short meetings first (fits only, then +30, +60, +120 min), and results are cached by window length + meetings, since the answer doesn't depend on the block's start time. Worst case across every block and sample course is ~0.3 s; typical is a few ms.
+Speed: the search runs with short meetings first (fits only, then +30, +60, +120 min), and results are cached by window length + meetings + full-term flag, since the answer doesn't depend on the block's start time. Worst case across every block and sample course is ~0.4 s; typical is a few ms. Across Fall 2026 / Winter 2027 / Summer 2027 and sample course mixes: 1,725 block options fit, 135 run over, 108 can't (course too small to meet 1.0 CH on every block day).
 
 ---
 
@@ -72,19 +79,26 @@ Speed: the search runs with short meetings first (fits only, then +30, +60, +120
 
 - **Mode toggle:** `[ Manual | Smart Split | Block Fit ]`, desktop and mobile. Block Fit needs lecture or lab units (single-component courses are fine) and is disabled for fixed-hours courses.
 - **Config:** units stay editable; start time shows "Set by block"; day pickers, TBA, custom split are hidden. A block panel lists the course's family (chips to view other families), grouped by day pattern. Each day variant shows ✓ (fits), `+Nm` (closest fit runs N min over), or ✕ (can't; hover for why).
-- **Selected block:** a result line says fits / doesn't fit (with which days run over), each day's end time, and the meeting-pattern count. An overrun also adds a warning, so the status reads "Adjusted".
+- **Selected block:** a result line says fits / doesn't fit (with which days run over), each day's end time, the meeting-pattern count, and each component's hours vs its target and catalog hours. An overrun also adds a warning, so the status reads "Adjusted". The panel header says which target applies (full term vs short session).
 - **Drag:** disabled in Block Fit (toast says to switch to Manual).
-- **Switching to Manual** keeps the fitted days, per-day hours, and start time in the manual controls. Switching to Smart Split starts Smart Split fresh.
+- **Switching to Manual** keeps the fitted days, per-day hours, and start time in the manual controls, and keeps the Block Fit hours rule (the custom-split footer shows the Block Fit range). Switching to Smart Split starts Smart Split fresh.
 
 ## Data model
 
-Workspace-only, like Smart Split: `blockFit` and `blockSelection` in `useWorkspace`, reset by `clearWorkspace`, course selection, and section load. Saved sections store the result as a fixed manual split (`lectureSplitMode`/`labSplitMode: 'custom'` + per-day hours); no schema change. Toast on save: "Block Fit sections save as fixed schedules — edits will use Manual mode."
+Workspace-only mode state, like Smart Split: `blockFit` and `blockSelection` in `useWorkspace`, reset by `clearWorkspace`, course selection, and section load. Saved sections store the result as a fixed manual split (`lectureSplitMode`/`labSplitMode: 'custom'` + per-day hours) plus **`hoursRule: 'blockFit'`** (optional, additive; missing = standard). Toast on save: "Block Fit sections save as fixed schedules — edits will use Manual mode."
+
+`hoursRule` travels with the section: workspace state `hoursRule` (set on load, or when leaving Block Fit for Manual), `GenerateScheduleOverrides.hoursRule`, and every place that regenerates a saved section (App, load, overlays, room context, spreadsheet export). The generator's custom-split check uses the Block Fit range when it's set and the standard ±0.05 CH/day/week otherwise; the even-split path and Manual/Smart Split are unchanged.
+
+## Spreadsheet export
+
+Sections whose days don't all meet the same way — custom split, per-day start times, or a lab that follows lecture on shared days without its own start time — export **one row per meeting pattern**, built from the generator's blocks (times, hrs/d, hrs/wk, hrs/ttl via `meetingsPerWeekday`). Everything else keeps the original one-row-per-component export. Before this, such sections exported as an even split with the lab at the lecture's start time.
 
 ---
 
 ## Known limits / notes
 
-- The block sheets were built for 16 student weeks and come in under catalog hours in places (e.g. 16-week 5-hour = 88.4 hrs vs 90). Block Fit targets each component's catalog hours (range above), so some blocks show a small overrun — e.g. every 16-week MTWR 5-hour block is +15 min for DFST 101 (its lab needs 80 min on one day).
-- The hours range is Block Fit's preference only. The generator's own acceptance (used by Manual, Smart Split, and saved sections) is unchanged and is looser: about ±0.05 CH per meeting day per week.
+- Some blocks still run over, e.g. every 16-week MTWR 5-hour block is +10 min for DFST 101: its lab needs at least 25.5 hrs (1.5 CH = 75 min on one day) and the block is 65 min.
+- Winter MTWR 1-hour blocks can't hold a 1-unit lecture: 19 meetings × 1.0 CH minimum = 19 hrs, above the 17.5 max.
+- The sidebar's end-time labels still assume an even split (pre-existing, all custom splits).
 - The 16-week 5-hour column lists 20-minute breaks (a manual extra 10 minutes). Block Fit ignores that and uses the standard break rules.
 - Lab is always placed after lecture on shared days. Lab-first never changes how long a day runs, so it doesn't affect fit.

@@ -18,6 +18,7 @@ interface BlockFitPickerProps {
     lectureUnits: number;
     labUnits: number;
     meetingsByDay: Record<string, number> | null;
+    fullSemester: boolean;
     selection: BlockOption | null;
     onSelect: (option: BlockOption) => void;
     result: BlockFitResult | { error: string } | null;
@@ -35,7 +36,7 @@ const DAYS_TITLES: Record<BlockDaysCode, string> = {
 const range = (start: string, end: string, fmt: '12h' | '24h') => `${formatTime(start, fmt)}–${formatTime(end, fmt)}`;
 
 const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
-    sheet, session, lectureUnits, labUnits, meetingsByDay, selection, onSelect, result, timeFormat
+    sheet, session, lectureUnits, labUnits, meetingsByDay, fullSemester, selection, onSelect, result, timeFormat
 }) => {
     const weekly = weeklyHoursOf(lectureUnits, labUnits);
     const courseFamily = familyFor(lectureUnits, labUnits);
@@ -54,12 +55,12 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
             const rows = byCode.get(option.daysCode) ?? new Map();
             const key = `${option.start}-${option.end}`;
             const row = rows.get(key) ?? [];
-            row.push({ option, fit: computeBlockFit(lectureUnits, labUnits, option.days, option.start, option.end, meetingsByDay) });
+            row.push({ option, fit: computeBlockFit(lectureUnits, labUnits, option.days, option.start, option.end, meetingsByDay, fullSemester) });
             rows.set(key, row);
             byCode.set(option.daysCode, rows);
         }
         return Array.from(byCode.entries()).map(([code, rows]) => ({ code, rows: Array.from(rows.values()) }));
-    }, [sheet, shownFamily, meetingsByDay, lectureUnits, labUnits]);
+    }, [sheet, shownFamily, meetingsByDay, fullSemester, lectureUnits, labUnits]);
 
     if (!sheet) {
         return (
@@ -85,6 +86,11 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                     {sheet.label} block schedule · {lectureUnits} lec + {labUnits} lab = <strong>{weekly} weekly hours</strong>
                     {weekly !== courseFamily && courseFamily <= 6 && <> (uses {courseFamily}-hour blocks)</>}
                     {courseFamily > 6 && <> — no block family is that large</>}
+                    <div className="bf-target-note">
+                        {fullSemester
+                            ? 'Full term: hours target the catalog total, ±1 week.'
+                            : 'Short session: hours target one week less than the catalog total.'}
+                    </div>
                 </div>
                 <div className="bf-families" role="group" aria-label="Weekly hours">
                     {families.map(h => (
@@ -114,18 +120,17 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                                         {row.map(({ option, fit }) => {
                                             const error = 'error' in fit ? fit.error : null;
                                             const over = 'error' in fit ? 0 : fit.overrunMinutes;
-                                            const offHours = !error && !('error' in fit) && !fit.hoursInRange;
-                                            const status = error ? 'error' : over > 0 || offHours ? 'over' : 'fits';
+                                            const status = error ? 'error' : over > 0 ? 'over' : 'fits';
                                             return (
                                                 <button
                                                     key={option.days.join()}
                                                     className={`bf-variant ${status} ${isSelected(option) ? 'selected' : ''}`}
                                                     onClick={() => onSelect(option)}
                                                     disabled={!!error}
-                                                    title={error ?? [over > 0 ? `Closest fit runs ${over} min past the block` : 'Fits the block', offHours ? 'hours outside 1% over / 2% under' : ''].filter(Boolean).join('; ')}
+                                                    title={error ?? (over > 0 ? `Closest fit runs ${over} min past the block` : 'Fits the block')}
                                                 >
                                                     {daysLabel(option.days)}
-                                                    <span className="bf-status">{error ? '✕' : over > 0 ? `+${over}m` : <Check size={11} />}{offHours && ' hrs!'}</span>
+                                                    <span className="bf-status">{error ? '✕' : over > 0 ? `+${over}m` : <Check size={11} />}</span>
                                                 </button>
                                             );
                                         })}
@@ -141,7 +146,7 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                 'error' in result ? (
                     <div className="bf-result error">{daysLabel(selection.days)} {range(selection.start, selection.end, timeFormat)}: {result.error}</div>
                 ) : (
-                    <div className={`bf-result ${result.overrunMinutes > 0 || !result.hoursInRange ? 'over' : 'fits'}`}>
+                    <div className={`bf-result ${result.overrunMinutes > 0 ? 'over' : 'fits'}`}>
                         <strong>{daysLabel(selection.days)} {range(selection.start, selection.end, timeFormat)}</strong>
                         {result.overrunMinutes > 0
                             ? <> — doesn't fit. Closest: runs <strong>{result.overrunMinutes} min</strong> past {formatTime(selection.end, timeFormat)} on {result.perDay.filter(d => d.overrunMinutes === result.overrunMinutes).map(d => d.day).join(', ')}.</>
@@ -149,10 +154,9 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                         {' '}{result.perDay.map(d => `${d.day} ends ${formatTime(d.endTime, timeFormat)}`).join(' · ')}
                         {' '}· {result.meetingPatterns} meeting pattern{result.meetingPatterns !== 1 ? 's' : ''}
                         <div className="bf-hours">
-                            {result.lectureRequired > 0 && <>Lecture {result.lectureHours} of {result.lectureRequired} hrs</>}
-                            {result.lectureRequired > 0 && result.labRequired > 0 && ' · '}
-                            {result.labRequired > 0 && <>Lab {result.labHours} of {result.labRequired} hrs</>}
-                            {!result.hoursInRange && <strong> — no placement in this block keeps the hours within 1% over / 2% under</strong>}
+                            {result.lectureCatalog > 0 && <>Lecture {result.lectureHours} hrs (target {result.lectureTarget} of {result.lectureCatalog})</>}
+                            {result.lectureCatalog > 0 && result.labCatalog > 0 && ' · '}
+                            {result.labCatalog > 0 && <>Lab {result.labHours} hrs (target {result.labTarget} of {result.labCatalog})</>}
                         </div>
                     </div>
                 )

@@ -1,8 +1,10 @@
 // src/utils/blockFit.ts
 // Block Fit: place a course's lecture and lab inside one block-schedule window
-// (e.g. MW 8:00-10:30) using the existing contact hour rules.
+// (e.g. MW 8:00-10:30) using the existing contact hour rules. Each component's term hours
+// land in the Block Fit range (src/utils/blockHours.ts), as close to its target as possible.
 
 import { calculateTimeMetrics, parseTimeToMinutes, formatMinutes } from './scheduleGenerator';
+import { blockHoursRange, HoursRange } from './blockHours';
 
 export interface BlockFitDay {
     day: string;
@@ -21,13 +23,13 @@ export interface BlockFitResult {
     // Minutes past the block's end on the worst day; 0 = fits
     overrunMinutes: number;
     meetingPatterns: number;
-    // Scheduled term contact hours vs the catalog's, per component
+    // Scheduled term contact hours vs the Block Fit target and the catalog's, per component
     lectureHours: number;
     labHours: number;
-    lectureRequired: number;
-    labRequired: number;
-    // False when no placement lands both components inside the preferred hours range
-    hoursInRange: boolean;
+    lectureTarget: number;
+    labTarget: number;
+    lectureCatalog: number;
+    labCatalog: number;
 }
 
 export interface BlockFitError {
@@ -38,14 +40,6 @@ export interface BlockFitError {
 const MAX_OVERRUN = 120;
 // Lecture and lab on the same day are separated by one break (same as the generator)
 const COMPONENT_GAP = 10;
-// Preferred range for each component's term hours around the catalog's: e.g. 54 → 52.9–54.5.
-// Over by more is pushing what's legally allowed; under is acceptable but closer is better.
-const HOURS_OVER = 0.01;
-const HOURS_UNDER = 0.02;
-
-export function hoursInRange(scheduled: number, required: number): boolean {
-    return scheduled <= required * (1 + HOURS_OVER) + 1e-9 && scheduled >= required * (1 - HOURS_UNDER) - 1e-9;
-}
 
 const clockCache: number[] = [];
 function clockMinutes(tenths: number): number {
@@ -62,43 +56,35 @@ interface Candidate {
     distinct: number; // distinct meeting lengths (x.1 and x.2 CH run the same length)
     deviation: number;
     shortfall: number;
-    inRange: boolean;
 }
 
-// The generator's custom-split acceptance check, with the same arithmetic in the same order,
-// so anything accepted here is accepted there.
-function generatorAccepts(v: Vector, meetings: number[], required: number): boolean {
+// Same arithmetic, in the same order, as the generator's Block Fit check, so anything
+// accepted here is accepted there
+function inRange(v: Vector, meetings: number[], range: HoursRange): boolean {
     let total = 0;
-    let n = 0;
-    let sumMeetings = 0;
     for (let i = 0; i < v.length; i++) {
-        if (!v[i]) continue;
-        total += (Math.round(v[i]) / 10) * meetings[i];
-        sumMeetings += meetings[i];
-        n++;
+        if (v[i]) total += (Math.round(v[i]) / 10) * meetings[i];
     }
-    const avgWeeks = sumMeetings / n;
-    const tolerance = Math.max(0.05, n * 0.05);
-    return Math.abs(total / avgWeeks - required / avgWeeks) <= tolerance;
+    return total >= range.min - 1e-6 && total <= range.max + 1e-6;
 }
 
 function scheduledTotal(v: Vector, meetings: number[]): number {
     return v.reduce((s, t, i) => s + t / 10 * meetings[i], 0);
 }
 
-// Every way to meet `required` term CH on these days using at most two distinct per-day values
+// Every way to land in `range` on these days using at most two distinct per-day values
 // (more than that is more meeting patterns than anyone wants). Values are ≥ 1.0 CH and at most
 // `capTenths`.
-function componentCandidates(required: number, meetings: number[], capTenths: number): Vector[] {
+function componentCandidates(range: HoursRange, meetings: number[], capTenths: number): Vector[] {
     const n = meetings.length;
-    if (required <= 0) return [new Array(n).fill(0)];
+    if (range.target <= 0) return [new Array(n).fill(0)];
     const out: Vector[] = [];
     const seen = new Set<string>();
     const tryVector = (v: Vector) => {
         const key = v.join(',');
         if (seen.has(key)) return;
         seen.add(key);
-        if (generatorAccepts(v, meetings, required)) out.push(v);
+        if (inRange(v, meetings, range)) out.push(v);
     };
 
     for (let mask = 1; mask < (1 << n); mask++) {
@@ -121,17 +107,17 @@ function componentCandidates(required: number, meetings: number[], capTenths: nu
             };
 
             if (E.length === 0) {
-                const base = Math.round(required / sumM * 10);
-                for (const a of [base - 1, base, base + 1]) {
-                    if (a >= 10 && a <= capTenths) tryVector(build(a, 0));
-                }
+                const lo = Math.max(10, Math.floor(range.min / sumM * 10));
+                const hi = Math.min(capTenths, Math.ceil(range.max / sumM * 10));
+                for (let a = lo; a <= hi; a++) tryVector(build(a, 0));
                 continue;
             }
 
             for (let a = 10; a <= capTenths; a++) {
-                const bExact = (required - a / 10 * mA) / mE * 10;
-                for (const b of [Math.floor(bExact), Math.ceil(bExact)]) {
-                    if (b !== a && b >= 10 && b <= capTenths) tryVector(build(a, b));
+                const lo = Math.max(10, Math.floor((range.min - a / 10 * mA) / mE * 10));
+                const hi = Math.min(capTenths, Math.ceil((range.max - a / 10 * mA) / mE * 10));
+                for (let b = lo; b <= hi; b++) {
+                    if (b !== a) tryVector(build(a, b));
                 }
             }
         }
@@ -158,40 +144,35 @@ interface Solution {
 
 // Best lecture/lab placement for a window of `window` minutes. Depends only on the window's
 // length, not its start, so every block of the same length shares one answer.
-function solve(lecRequired: number, labRequired: number, meetings: number[], window: number): Solution | null {
-    // Hours inside the preferred range come first, even if that means running past the block;
-    // only when no placement manages that do we fall back to anything the generator accepts.
-    for (const rangeOnly of [true, false]) {
-        // Search with short meetings first. A best answer that overruns by no more than `extra`
-        // is the overall best: anything better overruns less, so all its meetings are in this pass.
-        for (const extra of [0, 30, 60, MAX_OVERRUN]) {
-            const found = solveWithin(lecRequired, labRequired, meetings, window, window + extra, rangeOnly);
-            if (found && found.overrun <= extra) return found;
-            if (extra === MAX_OVERRUN && found) return found;
-        }
+function solve(lecRange: HoursRange, labRange: HoursRange, meetings: number[], window: number): Solution | null {
+    // Search with short meetings first. A best answer that overruns by no more than `extra`
+    // is the overall best: anything better overruns less, so all its meetings are in this pass.
+    for (const extra of [0, 30, 60, MAX_OVERRUN]) {
+        const found = solveWithin(lecRange, labRange, meetings, window, window + extra);
+        if (found && found.overrun <= extra) return found;
+        if (extra === MAX_OVERRUN) return found;
     }
     return null;
 }
 
-function solveWithin(lecRequired: number, labRequired: number, meetings: number[], window: number, maxMeetingMinutes: number, rangeOnly: boolean): Solution | null {
+function solveWithin(lecRange: HoursRange, labRange: HoursRange, meetings: number[], window: number, maxMeetingMinutes: number): Solution | null {
     const n = meetings.length;
     let capTenths = 10;
     while (clockMinutes(capTenths + 1) <= maxMeetingMinutes) capTenths++;
 
-    const prepare = (vectors: Vector[], required: number): Candidate[] => vectors.map(v => {
+    const prepare = (vectors: Vector[], range: HoursRange): Candidate[] => vectors.map(v => {
         const total = scheduledTotal(v, meetings);
         return {
             v,
             clocks: v.map(t => t ? clockMinutes(t) : 0),
             distinct: new Set(v.filter(t => t > 0).map(clockMinutes)).size,
-            deviation: Math.round(Math.abs(total - required) * 100),
-            shortfall: Math.round(Math.max(0, required - total) * 100),
-            inRange: required <= 0 || hoursInRange(total, required)
+            deviation: Math.round(Math.abs(total - range.target) * 100),
+            shortfall: Math.round(Math.max(0, range.target - total) * 100)
         };
     // Simplest first, so a good answer turns up early and prunes the rest
-    }).filter(c => !rangeOnly || c.inRange).sort((a, b) => a.distinct - b.distinct || Math.max(...a.clocks) - Math.max(...b.clocks));
-    const lecCands = prepare(componentCandidates(lecRequired, meetings, capTenths), lecRequired);
-    const labCands = prepare(componentCandidates(labRequired, meetings, capTenths), labRequired);
+    }).sort((a, b) => a.distinct - b.distinct || Math.max(...a.clocks) - Math.max(...b.clocks));
+    const lecCands = prepare(componentCandidates(lecRange, meetings, capTenths), lecRange);
+    const labCands = prepare(componentCandidates(labRange, meetings, capTenths), labRange);
 
     let best: { score: Score; lec: Vector; lab: Vector } | null = null;
 
@@ -246,7 +227,9 @@ export function computeBlockFit(
     days: string[],
     blockStart: string,
     blockEnd: string,
-    meetingsByDay: Record<string, number>
+    meetingsByDay: Record<string, number>,
+    // Full-term fall/spring targets the catalog hours; shorter sessions target a week less
+    fullSemester: boolean
 ): BlockFitResult | BlockFitError {
     if (days.length === 0) return { error: 'This block has no days.' };
     if (lectureUnits <= 0 && labUnits <= 0) return { error: 'Enter lecture or lab units to fit a block.' };
@@ -256,20 +239,22 @@ export function computeBlockFit(
     const start = parseTimeToMinutes(blockStart);
     const window = parseTimeToMinutes(blockEnd) - start;
     const meetings = days.map(d => meetingsByDay[d]);
-    const lecRequired = lectureUnits * 18;
-    const labRequired = labUnits * 54;
+    const lecCatalog = lectureUnits * 18;
+    const labCatalog = labUnits * 54;
+    const lecRange = blockHoursRange(lecCatalog, fullSemester);
+    const labRange = blockHoursRange(labCatalog, fullSemester);
 
-    const key = `${lectureUnits}|${labUnits}|${meetings.join(',')}|${window}`;
-    if (!solveCache.has(key)) solveCache.set(key, solve(lecRequired, labRequired, meetings, window));
+    const key = `${lectureUnits}|${labUnits}|${meetings.join(',')}|${window}|${fullSemester}`;
+    if (!solveCache.has(key)) solveCache.set(key, solve(lecRange, labRange, meetings, window));
     const best = solveCache.get(key);
 
     if (!best) {
         // Explain the usual cause: too few hours to give every day a 1.0 CH meeting
         const totalMeetings = meetings.reduce((s, m) => s + m, 0);
-        if (lecRequired + labRequired < totalMeetings) {
+        if (lecRange.max + labRange.max < totalMeetings) {
             return { error: `Not enough hours to meet on all ${days.length} days (1.0 CH minimum per meeting).` };
         }
-        const short = [lecRequired > 0 && lecRequired < Math.min(...meetings) ? 'lecture' : '', labRequired > 0 && labRequired < Math.min(...meetings) ? 'lab' : ''].filter(Boolean);
+        const short = [lecCatalog > 0 && lecRange.max < Math.min(...meetings) ? 'lecture' : '', labCatalog > 0 && labRange.max < Math.min(...meetings) ? 'lab' : ''].filter(Boolean);
         if (short.length) {
             return { error: `The ${short.join(' and ')} can't reach the 1.0 CH minimum for even one meeting a week.` };
         }
@@ -298,9 +283,10 @@ export function computeBlockFit(
         perDay,
         lectureHours: lectureHoursTotal,
         labHours: labHoursTotal,
-        lectureRequired: lecRequired,
-        labRequired,
-        hoursInRange: (lecRequired <= 0 || hoursInRange(lectureHoursTotal, lecRequired)) && (labRequired <= 0 || hoursInRange(labHoursTotal, labRequired)),
+        lectureTarget: Math.round(lecRange.target * 10) / 10,
+        labTarget: Math.round(labRange.target * 10) / 10,
+        lectureCatalog: lecCatalog,
+        labCatalog,
         overrunMinutes: best.overrun,
         meetingPatterns: best.patterns
     };

@@ -10,6 +10,7 @@ import { useRooms } from './hooks/useRooms';
 import { generateSchedule, meetingsPerWeekday } from './utils/scheduleGenerator';
 import { computeSmartSplit } from './utils/smartSplit';
 import { computeBlockFit } from './utils/blockFit';
+import { isFullSemester } from './utils/blockHours';
 import { formatTime } from './utils/timeUtils';
 import { ScheduleRequest } from './components/CourseInput';
 import { RuleAndTermContext, AcademicTerm, ScheduleInfo } from './types';
@@ -49,7 +50,7 @@ function App() {
   }, []);
 
   // Destructure for the useEffect dependencies
-  const { lectureUnits, lectureDays, labUnits, labDays, lecTbaHours, labTbaHours, fixedHours, setGeneratedSchedule, setLastRequest, setIsCalculating, smartSplit, smartSplitDays, blockFit, blockSelection } = workspaceAPI;
+  const { lectureUnits, lectureDays, labUnits, labDays, lecTbaHours, labTbaHours, fixedHours, setGeneratedSchedule, setLastRequest, setIsCalculating, smartSplit, smartSplitDays, blockFit, blockSelection, hoursRule } = workspaceAPI;
   const { startTime, labStartTime, selectedTermId, selectedSessionId,
     lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay,
     lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, timeFormat } = settingsAPI;
@@ -78,7 +79,7 @@ function App() {
             setGeneratedSchedule(null);
             setLastRequest(null);
           } else {
-            const result = computeBlockFit(lectureUnits, labUnits, blockSelection.days, blockSelection.start, blockSelection.end, meetingsPerWeekday(selectedTerm, selectedSession, attendanceRules));
+            const result = computeBlockFit(lectureUnits, labUnits, blockSelection.days, blockSelection.start, blockSelection.end, meetingsPerWeekday(selectedTerm, selectedSession, attendanceRules), isFullSemester(selectedTerm, selectedSession));
             if ('error' in result) {
               const emptyInfo: ScheduleInfo = { contactHoursForTerm: 0, weeklyContactHours: 0, totalScheduledContactHours: 0, contactHoursPerDay: 0, totalBreakMinutesPerDay: 0, actualMeetingDays: 0 };
               setGeneratedSchedule({ lectureInfo: emptyInfo, labInfo: emptyInfo, scheduleBlocks: [], warnings: ['ERROR: ' + result.error] });
@@ -91,14 +92,12 @@ function App() {
               const overrides = {
                 lectureHoursPerDay: result.lectureHoursPerDay,
                 labHoursPerDay: result.labHoursPerDay,
+                hoursRule: 'blockFit' as const,
               };
               const schedule = generateSchedule(request, context, blockSelection.start, null, overrides);
               if (result.overrunMinutes > 0) {
                 const late = result.perDay.filter(d => d.overrunMinutes > 0).map(d => `${d.day} ends ${formatTime(d.endTime, timeFormat)}`).join(', ');
                 schedule.warnings.unshift(`Doesn't fit the block (ends ${formatTime(blockSelection.end, timeFormat)}): ${late} — up to ${result.overrunMinutes} min over. This is the closest fit.`);
-              }
-              if (!result.hoursInRange) {
-                schedule.warnings.unshift(`Hours outside the preferred range (1% over / 2% under): lecture ${result.lectureHours} of ${result.lectureRequired}, lab ${result.labHours} of ${result.labRequired}.`);
               }
               setGeneratedSchedule(schedule);
               setLastRequest(request);
@@ -132,6 +131,7 @@ function App() {
             labTimesPerDay: labTimeMode === 'perDay' ? labTimesPerDay : undefined,
             lectureHoursPerDay: lectureSplitMode === 'custom' ? lectureHoursPerDay : undefined,
             labHoursPerDay: labSplitMode === 'custom' ? labHoursPerDay : undefined,
+            hoursRule,
           };
           const schedule = generateSchedule(request, context, startTime, labStartTime, overrides);
           setGeneratedSchedule(schedule);
@@ -147,7 +147,7 @@ function App() {
     startTime, labStartTime, selectedTermId, selectedSessionId,
     lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay,
     lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay,
-    smartSplit, smartSplitDays, blockFit, blockSelection, timeFormat,
+    smartSplit, smartSplitDays, blockFit, blockSelection, hoursRule, timeFormat,
     contactHourRules, attendanceRules, selectedTerm, selectedSession,
     setGeneratedSchedule, setLastRequest, setIsCalculating
   ]);

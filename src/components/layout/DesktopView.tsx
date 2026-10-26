@@ -82,11 +82,11 @@ export const DesktopView: React.FC<AppViewProps> = ({
         selectedCourseInfo, handleCourseSelect, fixedHours, setFixedHours, clearCourseSelection,
         getWorkspaceAsSection,
         smartSplit, setSmartSplit, smartSplitDays, setSmartSplitDays,
-        blockFit, setBlockFit, blockSelection, setBlockSelection
+        blockFit, setBlockFit, blockSelection, setBlockSelection, hoursRule, setHoursRule
     } = workspaceAPI;
 
     const {
-        sheet: blockSheet, session: blockSession, meetingsByDay: blockMeetings, canBlockFit,
+        sheet: blockSheet, session: blockSession, meetingsByDay: blockMeetings, fullSemester: blockFullSemester, canBlockFit, lecAcceptWeekly, labAcceptWeekly,
         blockFitResult, selectBlock, handleBlockFitToggle, blockFitSectionFields
     } = useBlockFitMode({ workspaceAPI, settingsAPI, calendar, attendanceRules, showToast });
 
@@ -178,10 +178,11 @@ export const DesktopView: React.FC<AppViewProps> = ({
         saveSection({
             lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, fixedHours, startTime, labStartTime, selectedTermId, selectedSessionId,
             ...(usesV2 ? { schemaVersion: 2 as const, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId } : {}),
+            ...(hoursRule ? { hoursRule } : {}),
             ...(currentSectionId ? {} : { name: sectionName })
         });
         showToast(currentSectionId ? "Section updated" : "Section saved");
-    }, [saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, currentSectionId, smartSplit, smartSplitDays, calendar, attendanceRules, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId, showToast, blockFitSectionFields]);
+    }, [saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, currentSectionId, smartSplit, smartSplitDays, calendar, attendanceRules, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId, showToast, blockFitSectionFields, hoursRule]);
 
     const handleSaveAsNew = useCallback(() => {
         if (lectureUnits === 0 && labUnits === 0) {
@@ -212,10 +213,11 @@ export const DesktopView: React.FC<AppViewProps> = ({
         saveSection({
             lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, fixedHours, startTime, labStartTime, selectedTermId, selectedSessionId,
             ...(usesV2 ? { schemaVersion: 2 as const, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId } : {}),
+            ...(hoursRule ? { hoursRule } : {}),
             name: sectionName
         }, true);
         showToast("Saved as new copy");
-    }, [blockFitSectionFields, saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, showToast]);
+    }, [blockFitSectionFields, hoursRule, saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, showToast]);
 
 
     const handleLoadSection = useCallback((section: SavedSection) => {
@@ -223,6 +225,7 @@ export const DesktopView: React.FC<AppViewProps> = ({
         setSmartSplitDays([]);
         setBlockFit(false);
         setBlockSelection(null);
+        setHoursRule(section.hoursRule);
         setCurrentSectionId(section.id);
         setLectureUnits(section.lectureUnits);
         setLectureDays(section.lectureDays);
@@ -266,11 +269,12 @@ export const DesktopView: React.FC<AppViewProps> = ({
                 labTimesPerDay: section.labTimeMode === 'perDay' ? (section.labTimesPerDay as Record<string, string>) : undefined,
                 lectureHoursPerDay: section.lectureSplitMode === 'custom' ? (section.lectureHoursPerDay as Record<string, number>) : undefined,
                 labHoursPerDay: section.labSplitMode === 'custom' ? (section.labHoursPerDay as Record<string, number>) : undefined,
+                hoursRule: section.hoursRule,
             };
             setGeneratedSchedule(generateSchedule(request, context, section.startTime, section.labStartTime, overrides));
             setLastRequest(request);
         }
-    }, [setBlockFit, setBlockSelection, contactHourRules, attendanceRules, calendar, setCurrentSectionId, setLectureUnits, setLectureDays, setLecTbaHours, setLabUnits, setLabDays, setLabTbaHours, setFixedHours, setStartTime, setLabStartTime, setSelectedTermId, setSelectedSessionId, setLectureTimeMode, setLabTimeMode, setLectureTimesPerDay, setLabTimesPerDay, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay, setGeneratedSchedule, setLastRequest]);
+    }, [setBlockFit, setBlockSelection, setHoursRule, contactHourRules, attendanceRules, calendar, setCurrentSectionId, setLectureUnits, setLectureDays, setLecTbaHours, setLabUnits, setLabDays, setLabTbaHours, setFixedHours, setStartTime, setLabStartTime, setSelectedTermId, setSelectedSessionId, setLectureTimeMode, setLabTimeMode, setLectureTimesPerDay, setLabTimesPerDay, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay, setGeneratedSchedule, setLastRequest]);
 
     const handleCopy = (summaryType: ExportType) => {
         if (!generatedSchedule) return;
@@ -331,6 +335,7 @@ export const DesktopView: React.FC<AppViewProps> = ({
         setSmartSplitDays([]);
         setBlockFit(false);
         setBlockSelection(null);
+        setHoursRule(undefined);
         showToast("Ready for new section", "info");
     };
 
@@ -556,6 +561,7 @@ export const DesktopView: React.FC<AppViewProps> = ({
             labTimesPerDay: section.labTimeMode === 'perDay' ? (section.labTimesPerDay as Record<string, string>) : undefined,
             lectureHoursPerDay: section.lectureSplitMode === 'custom' ? (section.lectureHoursPerDay as Record<string, number>) : undefined,
             labHoursPerDay: section.labSplitMode === 'custom' ? (section.labHoursPerDay as Record<string, number>) : undefined,
+            hoursRule: section.hoursRule,
         };
         return {
             id: section.id,
@@ -659,6 +665,8 @@ export const DesktopView: React.FC<AppViewProps> = ({
                         blockFit={blockFit}
                         canBlockFit={canBlockFit}
                         onBlockFitToggle={handleBlockFitToggle}
+                        lecAcceptWeekly={lecAcceptWeekly}
+                        labAcceptWeekly={labAcceptWeekly}
                         blockLabel={blockSelection ? `${daysLabel(blockSelection.days)} ${formatTime(blockSelection.start, timeFormat)}–${formatTime(blockSelection.end, timeFormat)}` : undefined}
                         blockFitPanel={
                             <BlockFitPicker
@@ -667,6 +675,7 @@ export const DesktopView: React.FC<AppViewProps> = ({
                                 lectureUnits={lectureUnits}
                                 labUnits={labUnits}
                                 meetingsByDay={blockMeetings}
+                                fullSemester={blockFullSemester}
                                 selection={blockSelection}
                                 onSelect={selectBlock}
                                 result={blockFitResult}

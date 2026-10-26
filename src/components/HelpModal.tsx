@@ -51,7 +51,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "How do I fit a course into the block schedule?",
-    answer: "Switch to Block Fit at the top of the configuration. Pick your term, session, and course; the app works out its weekly hours (lecture units + 3 × lab units) and lists that family's blocks from the block schedule. Each choice shows ✓ if the lecture and lab fit inside it, or +N min if the closest fit runs over. Click one to place the course — lecture first, lab after a 10-minute break on shared days. Block Fit covers full-term, 12-week and 8-week fall/spring sessions, 8- and 6-week summer sessions, and winter. Switch back to Manual to fine-tune; the fitted schedule carries over."
+    answer: "Switch to Block Fit at the top of the configuration. Pick your term, session, and course; the app works out its weekly hours (lecture units + 3 × lab units) and lists that family's blocks from the block schedule. Each choice shows ✓ if the lecture and lab fit inside it, or +N min if the closest fit runs over. Click one to place the course — lecture first, lab after a 10-minute break on shared days. Block Fit covers full-term, 12-week and 8-week fall/spring sessions, 8- and 6-week summer sessions, and winter. Hours are estimates: a full-term fall/spring course aims for its catalog hours (within a week either way); shorter sessions aim for one week less. Switch back to Manual to fine-tune; the fitted schedule carries over."
   },
   {
     question: "Can I move meetings by dragging on the calendar?",

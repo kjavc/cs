@@ -4,7 +4,8 @@ import { ScheduleRequest } from '../components/CourseInput';
 
 import { getDateString, getSessionDates } from './dateUtils';
 
-import { ScheduleBlock, ScheduleInfo, GeneratedSchedule, RuleAndTermContext, AcademicTerm, TermSession, AttendanceAccountingRules } from '../types';
+import { ScheduleBlock, ScheduleInfo, GeneratedSchedule, RuleAndTermContext, AcademicTerm, TermSession, AttendanceAccountingRules, HoursRule } from '../types';
+import { blockHoursRange, isFullSemester, withinRange } from './blockHours';
 
 
 
@@ -186,7 +187,8 @@ function calculateDailySchedule(
     context: RuleAndTermContext,
     warnings: string[],
     customHoursPerDay?: Partial<Record<string, number>>,
-    fixedHours?: number
+    fixedHours?: number,
+    hoursRule?: HoursRule
 ): DailyScheduleResult | null {
     const { term, session, attendanceRules } = context;
     const isFixed = fixedHours !== undefined;
@@ -255,12 +257,21 @@ function calculateDailySchedule(
         // With no holidays, avgWeeks === weeks and this is sumWeeklyCH vs weeklyRequiredCH.
         const perWeekDayCount = daysOfWeek.length || 1;
         const avgWeeks = actualMeetingDays / perWeekDayCount;
-        const scheduledWeeklyCH = totalScheduledContactHours / avgWeeks;
-        const requiredWeeklyCH = effectiveContactHoursForTerm / avgWeeks;
-        const tolerance = Math.max(0.05, daysOfWeek.length * 0.05);
-        if (Math.abs(scheduledWeeklyCH - requiredWeeklyCH) > tolerance) {
-            warnings.push(`ERROR: Custom ${type} split sums to ${scheduledWeeklyCH.toFixed(1)} CH/week but requires ${requiredWeeklyCH.toFixed(1)} CH/week.`);
-            return null;
+        if (hoursRule === 'blockFit') {
+            // Block Fit sections are estimates with their own range (src/utils/blockHours.ts)
+            const range = blockHoursRange(effectiveContactHoursForTerm, isFullSemester(term, session));
+            if (!withinRange(totalScheduledContactHours, range)) {
+                warnings.push(`ERROR: Custom ${type} split totals ${totalScheduledContactHours.toFixed(1)} hrs; Block Fit allows ${range.min.toFixed(1)}–${range.max.toFixed(1)}.`);
+                return null;
+            }
+        } else {
+            const scheduledWeeklyCH = totalScheduledContactHours / avgWeeks;
+            const requiredWeeklyCH = effectiveContactHoursForTerm / avgWeeks;
+            const tolerance = Math.max(0.05, daysOfWeek.length * 0.05);
+            if (Math.abs(scheduledWeeklyCH - requiredWeeklyCH) > tolerance) {
+                warnings.push(`ERROR: Custom ${type} split sums to ${scheduledWeeklyCH.toFixed(1)} CH/week but requires ${requiredWeeklyCH.toFixed(1)} CH/week.`);
+                return null;
+            }
         }
 
         const info: ScheduleInfo = {
@@ -315,6 +326,8 @@ export interface GenerateScheduleOverrides {
     labTimesPerDay?: Partial<Record<string, string>>;
     lectureHoursPerDay?: Partial<Record<string, number>>;
     labHoursPerDay?: Partial<Record<string, number>>;
+    // 'blockFit': custom splits are checked against the Block Fit hours range
+    hoursRule?: HoursRule;
 }
 
 export function parseTimeToMinutes(t: string): number {
@@ -349,8 +362,8 @@ export function generateSchedule(
 
     if (request.lectureUnits === 0 && request.labUnits === 0) return emptySchedule;
 
-    const lectureResult = calculateDailySchedule(request.lectureUnits, request.lectureDays, 'lecture', request.lecTbaHours || 0, context, warnings, overrides?.lectureHoursPerDay, request.fixedHours?.lec);
-    const labResult = calculateDailySchedule(request.labUnits, request.labDays, 'lab', request.labTbaHours || 0, context, warnings, overrides?.labHoursPerDay, request.fixedHours?.lab);
+    const lectureResult = calculateDailySchedule(request.lectureUnits, request.lectureDays, 'lecture', request.lecTbaHours || 0, context, warnings, overrides?.lectureHoursPerDay, request.fixedHours?.lec, overrides?.hoursRule);
+    const labResult = calculateDailySchedule(request.labUnits, request.labDays, 'lab', request.labTbaHours || 0, context, warnings, overrides?.labHoursPerDay, request.fixedHours?.lab, overrides?.hoursRule);
 
     if (!lectureResult || !labResult) {
         return { ...emptySchedule, lectureInfo: lectureResult?.info || emptyInfo, labInfo: labResult?.info || emptyInfo, warnings };

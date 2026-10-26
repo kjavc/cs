@@ -90,6 +90,9 @@ interface MobileConfigProps {
     onBlockFitToggle: (enabled: boolean, keepResult?: boolean) => void;
     blockFitPanel: React.ReactNode;
     blockLabel?: string;
+    // Block Fit range (CH/week) when the manual split came from Block Fit
+    lecAcceptWeekly?: { target: number; min: number; max: number };
+    labAcceptWeekly?: { target: number; min: number; max: number };
 }
 
 export const MobileConfig: React.FC<MobileConfigProps> = ({
@@ -120,7 +123,7 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
     smartSplit, setSmartSplit,
     smartSplitDays, setSmartSplitDays,
     canSmartSplit, onSmartSplitToggle,
-    blockFit, canBlockFit, onBlockFitToggle, blockFitPanel, blockLabel
+    blockFit, canBlockFit, onBlockFitToggle, blockFitPanel, blockLabel, lecAcceptWeekly, labAcceptWeekly
 }) => {
     const weeks = selectedSession.weeks || 1;
     // Fixed-hours courses meet once, so the whole total is due on the one day
@@ -362,7 +365,8 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                         hoursPerDay={lectureHoursPerDay}
                                         setHoursPerDay={setLectureHoursPerDay}
                                         startTimeForDay={lecStartForDay}
-                                        weeklyRequiredCH={lecWeeklyCH}
+                                        weeklyRequiredCH={lecAcceptWeekly?.target ?? lecWeeklyCH}
+                                        acceptWeeklyRange={lecAcceptWeekly}
                                         timeFormat={timeFormat}
                                     />
                                 )}
@@ -375,7 +379,8 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                         hoursPerDay={labHoursPerDay}
                                         setHoursPerDay={setLabHoursPerDay}
                                         startTimeForDay={labStartForDay}
-                                        weeklyRequiredCH={labWeeklyCH}
+                                        weeklyRequiredCH={labAcceptWeekly?.target ?? labWeeklyCH}
+                                        acceptWeeklyRange={labAcceptWeekly}
                                         timeFormat={timeFormat}
                                     />
                                 )}
