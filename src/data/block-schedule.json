@@ -1,5 +1,5 @@
 {
-  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Windows whose length did not match the rest of their column are listed under \"excluded\" and left out until confirmed.",
+  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Corrections confirmed by scheduling: intersession 1-hr 2:30-2:20 -> 2:30-3:20; 12-week 5-hr MTWR 3:30-5:15 -> 3:30-5:05. Windows whose length did not match the rest of their column are listed under \"excluded\" and left out until confirmed.",
   "schedules": [
     {
       "id": "16wk", "label": "16-week", "revised": "2022-11-23",
@@ -35,15 +35,14 @@
         {"weeklyHours": 4, "kind": "standard", "days": "MW|TR", "times": ["07:45-10:50", "09:30-12:35", "11:00-14:05", "12:30-15:35", "14:00-17:05", "17:00-20:05", "18:30-21:35", "19:15-22:20"]},
         {"weeklyHours": 4, "kind": "standard", "days": "MTWR", "times": ["08:00-09:15", "09:30-10:45", "11:00-12:15", "12:30-13:45", "14:00-15:15", "15:30-16:45", "17:00-18:15", "18:30-19:45", "20:00-21:15"]},
         {"weeklyHours": 5, "kind": "standard", "days": "MW|TR", "times": ["08:00-11:35", "12:30-16:05", "17:00-20:35", "18:30-22:05"]},
-        {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["07:45-09:20", "09:30-11:05", "11:00-12:35", "17:30-19:05", "18:30-20:05", "20:15-21:50"]},
+        {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["07:45-09:20", "09:30-11:05", "11:00-12:35", "15:30-17:05", "17:30-19:05", "18:30-20:05", "20:15-21:50"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MW|TR", "times": ["07:45-12:10", "12:30-16:55", "17:30-21:55", "18:00-22:25"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]}
       ],
       "excluded": [
         {"weeklyHours": 2, "days": "MW|TR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"},
         {"weeklyHours": 4, "days": "MTWR", "start": "06:45", "end": "07:45", "reason": "60 min; the rest of this column is 75 min"},
-        {"weeklyHours": 5, "days": "MTWR", "start": "12:45", "end": "15:20", "reason": "155 min; the rest of this column is 95 min"},
-        {"weeklyHours": 5, "days": "MTWR", "start": "15:30", "end": "17:15", "reason": "105 min; the rest of this column is 95 min"}
+        {"weeklyHours": 5, "days": "MTWR", "start": "12:45", "end": "15:20", "reason": "155 min; the rest of this column is 95 min"}
       ]
     },
     {

@@ -30,7 +30,7 @@ Block Fit produces exactly this.
 - Day codes: `SGL` (any one weekday M–F), `MW|TR`, `MWF|TRF`, `MTWR`, `MTWRF`. "Sgl Session or Lab" = `SGL`; "Lab 2/wk" = `MW|TR`; the 12-week 1-hour column has no day label and is `SGL` (its hours only work out for one day a week).
 - `kind: "lecLab"`: the 6-hour **Lecture/Lab** columns. These are unadvertised but standard for 6-hour lec/lab courses (DM, ART). For a course with both lecture and lab, they replace the standard column with the same days. On the 16-week sheet the lec/lab starts are 1:00 PM (not 12:30), 2:30 PM (not 2:00), and 6:00 or 7:00 PM (not 5:00), per scheduling.
 - `excluded`: windows whose length doesn't match the rest of their column (probable typos), left out until confirmed.
-- Fixes applied: intersession 1-hour "2:30 - 2:20" → 2:30–3:20 (confirmed).
+- Fixes applied (confirmed): intersession 1-hour "2:30 - 2:20" → 2:30–3:20; 12-week 5-hour MTWR "3:30 - 5:15" → 3:30–5:05.
 
 ### Session → sheet
 
