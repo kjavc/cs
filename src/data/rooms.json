@@ -1,0 +1,139 @@
+{
+  "AIAAT": {
+    "name": "Aerospace, Industrial & Applied Technologies",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "aiaat-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "aiaat-102", "number": "102", "type": "lecture", "capacity": 35 }
+        ]
+      }
+    ]
+  },
+  "AHUM": {
+    "name": "Arts & Humanities",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "ahum-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "ahum-102", "number": "102", "type": "lecture", "capacity": 35 }
+        ]
+      }
+    ]
+  },
+  "HSS": {
+    "name": "Health & Safety Sciences",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "hss-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "hss-102", "number": "102", "type": "lab", "capacity": 24 }
+        ]
+      }
+    ]
+  },
+  "LACA": {
+    "name": "Language & Communication Arts",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "laca-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "laca-102", "number": "102", "type": "lecture", "capacity": 35 }
+        ]
+      }
+    ]
+  },
+  "MS": {
+    "name": "Math, Sciences & Engineering",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "ms-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "ms-102", "number": "102", "type": "lab", "capacity": 24 }
+        ]
+      }
+    ]
+  },
+  "ESA": {
+    "name": "Equity & Student Advancement",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "esa-101", "number": "101", "type": "lecture", "capacity": 35 }
+        ]
+      }
+    ]
+  },
+  "SBS": {
+    "name": "Social & Behavioral Sciences",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "sbs-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "sbs-102", "number": "102", "type": "lecture", "capacity": 35 }
+        ]
+      }
+    ]
+  },
+  "CM": {
+    "name": "Counseling & Matriculation",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "cm-101", "number": "101", "type": "lecture", "capacity": 30 }
+        ]
+      }
+    ]
+  },
+  "IRLS": {
+    "name": "Institutional Research & Library Sciences",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "irls-101", "number": "101", "type": "lecture", "capacity": 30 }
+        ]
+      }
+    ]
+  },
+  "AKIN": {
+    "name": "Athletics & Kinesiology",
+    "buildings": [
+      {
+        "id": "bldg-placeholder",
+        "code": "TBD",
+        "name": "Placeholder Building",
+        "rooms": [
+          { "id": "akin-101", "number": "101", "type": "lecture", "capacity": 35 },
+          { "id": "akin-gym", "number": "GYM", "type": "lab", "capacity": 40 }
+        ]
+      }
+    ]
+  }
+}

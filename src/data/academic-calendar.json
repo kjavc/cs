@@ -1,0 +1,133 @@
+[
+  {
+    "id": "fa2026",
+    "name": "Fall 2026",
+    "type": "semester",
+    "startDate": "2026-08-17",
+    "endDate": "2026-12-05",
+    "holidays": ["2026-09-07", "2026-10-12", "2026-11-11", "2026-11-26", "2026-11-27", "2026-11-28"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Term", "weeks": 17, "method": "FULL_TERM" },
+      { "id": "late-15", "name": "Late Start (15 wks)", "weeks": 15, "method": "LATE_START" },
+      { "id": "late-14", "name": "Late Start (14 wks)", "weeks": 14, "method": "LATE_START" },
+      { "id": "late-12", "name": "Late Start (12 wks)", "weeks": 12, "method": "LATE_START" },
+      { "id": "first-8", "name": "First 8-Week Session", "weeks": 8, "method": "EARLY_START" },
+      { "id": "second-8", "name": "Second 8-Week Session", "weeks": 8, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "wi2027",
+    "name": "Winter 2027",
+    "type": "intersession",
+    "startDate": "2027-01-04",
+    "endDate": "2027-02-06",
+    "holidays": ["2027-01-18"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Session (5 wks)", "weeks": 5, "method": "FULL_TERM" }
+    ]
+  },
+  {
+    "id": "sp2027",
+    "name": "Spring 2027",
+    "type": "semester",
+    "startDate": "2027-02-08",
+    "endDate": "2027-06-05",
+    "holidays": ["2027-02-12", "2027-02-13", "2027-02-15", "2027-03-31", "2027-04-05", "2027-04-06", "2027-04-07", "2027-04-08", "2027-04-09", "2027-04-10", "2027-05-31"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Term", "weeks": 17, "method": "FULL_TERM" },
+      { "id": "late-15", "name": "Late Start (15 wks)", "weeks": 15, "method": "LATE_START" },
+      { "id": "late-14", "name": "Late Start (14 wks)", "weeks": 14, "method": "LATE_START" },
+      { "id": "late-12", "name": "Late Start (12 wks)", "weeks": 12, "method": "LATE_START" },
+      { "id": "first-8", "name": "First 8-Week Session", "weeks": 8, "method": "EARLY_START" },
+      { "id": "second-8", "name": "Second 8-Week Session", "weeks": 8, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "su2026",
+    "name": "Summer 2026",
+    "type": "intersession",
+    "startDate": "2026-06-15",
+    "endDate": "2026-08-08",
+    "holidays": ["2026-06-19", "2026-07-03", "2026-07-04"],
+    "sessions": [
+      { "id": "full-8", "name": "Full Session (8 wks)", "weeks": 8, "method": "FULL_TERM" },
+      { "id": "first-6", "name": "First 6-Week Session", "weeks": 6, "method": "EARLY_START" },
+      { "id": "second-6", "name": "Second 6-Week Session", "weeks": 6, "method": "LATE_START" },
+      { "id": "first-4", "name": "First 4-Week Session", "weeks": 4, "method": "EARLY_START" },
+      { "id": "second-4", "name": "Second 4-Week Session", "weeks": 4, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "su2027",
+    "name": "Summer 2027",
+    "type": "intersession",
+    "startDate": "2027-06-14",
+    "endDate": "2027-08-07",
+    "holidays": ["2027-06-18", "2027-06-19", "2027-07-05"],
+    "sessions": [
+      { "id": "full-8", "name": "Full Session (8 wks)", "weeks": 8, "method": "FULL_TERM" },
+      { "id": "first-6", "name": "First 6-Week Session", "weeks": 6, "method": "EARLY_START" },
+      { "id": "second-6", "name": "Second 6-Week Session", "weeks": 6, "method": "LATE_START" },
+      { "id": "first-4", "name": "First 4-Week Session", "weeks": 4, "method": "EARLY_START" },
+      { "id": "second-4", "name": "Second 4-Week Session", "weeks": 4, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "fa2027",
+    "name": "Fall 2027",
+    "type": "semester",
+    "startDate": "2027-08-16",
+    "endDate": "2027-12-04",
+    "holidays": ["2027-09-06", "2027-10-11", "2027-11-11", "2027-11-25", "2027-11-26", "2027-11-27"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Term", "weeks": 17, "method": "FULL_TERM" },
+      { "id": "late-15", "name": "Late Start (15 wks)", "weeks": 15, "method": "LATE_START" },
+      { "id": "late-14", "name": "Late Start (14 wks)", "weeks": 14, "method": "LATE_START" },
+      { "id": "late-12", "name": "Late Start (12 wks)", "weeks": 12, "method": "LATE_START" },
+      { "id": "first-8", "name": "First 8-Week Session", "weeks": 8, "method": "EARLY_START" },
+      { "id": "second-8", "name": "Second 8-Week Session", "weeks": 8, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "wi2028",
+    "name": "Winter 2028",
+    "type": "intersession",
+    "startDate": "2028-01-04",
+    "endDate": "2028-02-05",
+    "holidays": ["2028-01-17"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Session (5 wks)", "weeks": 5, "method": "FULL_TERM" }
+    ]
+  },
+  {
+    "id": "sp2028",
+    "name": "Spring 2028",
+    "type": "semester",
+    "startDate": "2028-02-07",
+    "endDate": "2028-06-03",
+    "holidays": ["2028-02-18", "2028-02-19", "2028-02-21", "2028-03-31", "2028-04-03", "2028-04-04", "2028-04-05", "2028-04-06", "2028-04-07", "2028-04-08", "2028-05-29"],
+    "sessions": [
+      { "id": "full-term", "name": "Full Term", "weeks": 17, "method": "FULL_TERM" },
+      { "id": "late-15", "name": "Late Start (15 wks)", "weeks": 15, "method": "LATE_START" },
+      { "id": "late-14", "name": "Late Start (14 wks)", "weeks": 14, "method": "LATE_START" },
+      { "id": "late-12", "name": "Late Start (12 wks)", "weeks": 12, "method": "LATE_START" },
+      { "id": "first-8", "name": "First 8-Week Session", "weeks": 8, "method": "EARLY_START" },
+      { "id": "second-8", "name": "Second 8-Week Session", "weeks": 8, "method": "LATE_START" }
+    ]
+  },
+  {
+    "id": "su2028",
+    "name": "Summer 2028",
+    "type": "intersession",
+    "startDate": "2028-06-12",
+    "endDate": "2028-08-05",
+    "holidays": ["2028-06-19", "2028-07-04"],
+    "sessions": [
+      { "id": "full-8", "name": "Full Session (8 wks)", "weeks": 8, "method": "FULL_TERM" },
+      { "id": "first-6", "name": "First 6-Week Session", "weeks": 6, "method": "EARLY_START" },
+      { "id": "second-6", "name": "Second 6-Week Session", "weeks": 6, "method": "LATE_START" },
+      { "id": "first-4", "name": "First 4-Week Session", "weeks": 4, "method": "EARLY_START" },
+      { "id": "second-4", "name": "Second 4-Week Session", "weeks": 4, "method": "LATE_START" }
+    ]
+  }
+]

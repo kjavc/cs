@@ -1,0 +1,36 @@
+{
+  "divisions": {
+    "AIAAT": "Aerospace, Industrial & Applied Technologies",
+    "AHUM": "Arts & Humanities",
+    "HSS": "Health & Safety Sciences",
+    "LACA": "Language & Communication Arts",
+    "MS": "Math, Sciences & Engineering",
+    "ESA": "Equity & Student Advancement",
+    "SBS": "Social & Behavioral Sciences",
+    "CM": "Counseling & Matriculation",
+    "IRLS": "Institutional Research & Library Sciences",
+    "AKIN": "Athletics & Kinesiology"
+  },
+  "departments": {
+    "AD": "Academic Development",
+    "BES": "Biological & Environmental Science",
+    "BSCI": "Behavioral Science",
+    "BUS": "Business",
+    "COMM": "Communications",
+    "COUN": "Counseling",
+    "ENGL": "English",
+    "FCS": "Family & Consumer Science",
+    "IT": "Industrial Technology",
+    "KA": "Kinesiology & Athletics",
+    "LIB": "Library",
+    "MATH": "Mathematics",
+    "NS": "Nursing Science",
+    "PA": "Performing Arts",
+    "PSAH": "Public Safety & Allied Health",
+    "PSE": "Physical Science",
+    "SS": "Social Science",
+    "TT": "Trade Technologies",
+    "VA": "Visual Arts",
+    "WL": "World Languages"
+  }
+}
