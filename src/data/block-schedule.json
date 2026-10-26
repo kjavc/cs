@@ -1,5 +1,5 @@
 {
-  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Corrections confirmed by scheduling: intersession 1-hr 2:30-2:20 -> 2:30-3:20; 12-week 5-hr MTWR 3:30-5:15 -> 3:30-5:05, 12:45-3:20 -> 12:45-2:20; evening 6:30-7:20 PM -> 6:30-7:50 PM (all sheets). Windows whose length did not match the rest of their column are listed under \"excluded\" and left out until confirmed.",
+  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Corrections confirmed by scheduling: intersession 1-hr 2:30-2:20 -> 2:30-3:20; 12-week 5-hr MTWR 3:30-5:15 -> 3:30-5:05, 12:45-3:20 -> 12:45-2:20; evening 6:30-7:20 PM -> 6:30-7:50 PM (all sheets). Windows listed under \"excluded\" are sheet errors confirmed by scheduling and are not offered.",
   "schedules": [
     {
       "id": "16wk", "label": "16-week", "revised": "2022-11-23",
@@ -37,7 +37,7 @@
         {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]}
       ],
       "excluded": [
-        {"weeklyHours": 4, "days": "MTWR", "start": "06:45", "end": "07:45", "reason": "Sheet says 6:45-7:45 (60 min); confirmed as 6:45-7:50 (65 min), but the rest of this column is 75 min"}
+        {"weeklyHours": 4, "days": "MTWR", "start": "06:45", "end": "07:45", "reason": "Sheet error, confirmed by scheduling: this slot doesn't exist (it would conflict with other blocks)"}
       ]
     },
     {
