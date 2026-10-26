@@ -30,7 +30,8 @@ Block Fit produces exactly this.
 - Day codes: `SGL` (any one weekday M–F), `MW|TR`, `MWF|TRF`, `MTWR`, `MTWRF`. "Sgl Session or Lab" = `SGL`; "Lab 2/wk" = `MW|TR`; the 12-week 1-hour column has no day label and is `SGL` (its hours only work out for one day a week).
 - `kind: "lecLab"`: the 6-hour **Lecture/Lab** columns. These are unadvertised but standard for 6-hour lec/lab courses (DM, ART). For a course with both lecture and lab, they replace the standard column with the same days. On the 16-week sheet the lec/lab starts are 1:00 PM (not 12:30), 2:30 PM (not 2:00), and 6:00 or 7:00 PM (not 5:00), per scheduling.
 - `excluded`: windows whose length doesn't match the rest of their column (probable typos), left out until confirmed.
-- Fixes applied (confirmed): intersession 1-hour "2:30 - 2:20" → 2:30–3:20; 12-week 5-hour MTWR "3:30 - 5:15" → 3:30–5:05.
+- Fixes applied (confirmed): intersession 1-hour "2:30 - 2:20" → 2:30–3:20; 12-week 5-hour MTWR "3:30 - 5:15" → 3:30–5:05 and "12:45 - 3:20" → 12:45–2:20; evening "6:30 - 7:20" PM → 6:30–7:50 PM on every sheet.
+- Still excluded: 12-week 4-hour MTWR "6:45 - 7:45" (confirmed as 6:45–7:50, but that's 65 min in a 75-min column).
 
 ### Session → sheet
 
@@ -52,7 +53,8 @@ Inputs: lecture/lab units, the block's days, start, end, and meetings per weekda
 
 1. **Candidates per component.** Every way to meet the term's contact hours (`units × 18` / `units × 54`) on any subset of the block's days, using at most two distinct per-day values (more is more meeting patterns than anyone wants). Each meeting is ≥ 1.0 CH. A candidate is kept only if the generator's custom-split check accepts it — the same arithmetic, so nothing Block Fit offers is rejected later.
 2. **Pairing.** Lecture runs first from the block start; on a day with both, the lab follows after the usual 10-minute break (same as the generator). Every block day must be used.
-3. **Ranking** (lower is better, in order):
+3. **Hours range.** Each component's term hours should land between 2% under and 1% over the catalog's (54 → 52.9–54.5; 54.4 is fine, 55 is pushing what's legally allowed). Placements in range always win, even if they run past the block. Only when none exists does it fall back to anything the generator accepts, and the result is flagged ("hrs!" on the chip, a warning on the schedule). Small components often can't land in range: 0.1 CH × 17 meetings = 1.7 hrs per step, so 1 lecture unit on a full term is 17.0 or 18.7 hrs (the same 18.7 Manual mode gives).
+4. **Ranking** (lower is better, in order):
    1. minutes past the block end on the worst day,
    2. total minutes past the end,
    3. meeting patterns (distinct start/end per component),
@@ -60,7 +62,7 @@ Inputs: lecture/lab units, the block's days, start, end, and meetings per weekda
    5. hours short of required,
    6. spread between the days' end times,
    7. lecture earlier in the week (how these are built by hand).
-4. **Doesn't fit:** the best answer is still returned, with its overrun ("closest fit"), up to 120 minutes over. Beyond that, or when the course can't meet the 1.0 CH minimum on every block day, an error explains why.
+5. **Doesn't fit:** the best answer is still returned, with its overrun ("closest fit"), up to 120 minutes over. Beyond that, or when the course can't meet the 1.0 CH minimum on every block day, an error explains why.
 
 Speed: the search runs with short meetings first (fits only, then +30, +60, +120 min), and results are cached by window length + meetings, since the answer doesn't depend on the block's start time. Worst case across every block and sample course is ~0.3 s; typical is a few ms.
 
@@ -82,6 +84,7 @@ Workspace-only, like Smart Split: `blockFit` and `blockSelection` in `useWorkspa
 
 ## Known limits / notes
 
-- The block sheets were built for 16 student weeks and come in slightly under catalog hours in places (e.g. 16-week 5-hour = 88.4 hrs vs 90; 4-hour = 71.4 vs 72; 1-hour = 17 vs 18). The app keeps the full catalog hours (existing rules, unchanged), so some blocks show a small overrun — e.g. every 16-week MTWR 5-hour block is +15 min for DFST 101.
+- The block sheets were built for 16 student weeks and come in under catalog hours in places (e.g. 16-week 5-hour = 88.4 hrs vs 90). Block Fit targets each component's catalog hours (range above), so some blocks show a small overrun — e.g. every 16-week MTWR 5-hour block is +15 min for DFST 101 (its lab needs 80 min on one day).
+- The hours range is Block Fit's preference only. The generator's own acceptance (used by Manual, Smart Split, and saved sections) is unchanged and is looser: about ±0.05 CH per meeting day per week.
 - The 16-week 5-hour column lists 20-minute breaks (a manual extra 10 minutes). Block Fit ignores that and uses the standard break rules.
 - Lab is always placed after lecture on shared days. Lab-first never changes how long a day runs, so it doesn't affect fit.

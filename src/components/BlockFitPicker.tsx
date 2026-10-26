@@ -114,17 +114,18 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                                         {row.map(({ option, fit }) => {
                                             const error = 'error' in fit ? fit.error : null;
                                             const over = 'error' in fit ? 0 : fit.overrunMinutes;
-                                            const status = error ? 'error' : over > 0 ? 'over' : 'fits';
+                                            const offHours = !error && !('error' in fit) && !fit.hoursInRange;
+                                            const status = error ? 'error' : over > 0 || offHours ? 'over' : 'fits';
                                             return (
                                                 <button
                                                     key={option.days.join()}
                                                     className={`bf-variant ${status} ${isSelected(option) ? 'selected' : ''}`}
                                                     onClick={() => onSelect(option)}
                                                     disabled={!!error}
-                                                    title={error ?? (over > 0 ? `Closest fit runs ${over} min past the block` : 'Fits the block')}
+                                                    title={error ?? [over > 0 ? `Closest fit runs ${over} min past the block` : 'Fits the block', offHours ? 'hours outside 1% over / 2% under' : ''].filter(Boolean).join('; ')}
                                                 >
                                                     {daysLabel(option.days)}
-                                                    <span className="bf-status">{error ? '✕' : over > 0 ? `+${over}m` : <Check size={11} />}</span>
+                                                    <span className="bf-status">{error ? '✕' : over > 0 ? `+${over}m` : <Check size={11} />}{offHours && ' hrs!'}</span>
                                                 </button>
                                             );
                                         })}
@@ -140,13 +141,19 @@ const BlockFitPicker: React.FC<BlockFitPickerProps> = ({
                 'error' in result ? (
                     <div className="bf-result error">{daysLabel(selection.days)} {range(selection.start, selection.end, timeFormat)}: {result.error}</div>
                 ) : (
-                    <div className={`bf-result ${result.overrunMinutes > 0 ? 'over' : 'fits'}`}>
+                    <div className={`bf-result ${result.overrunMinutes > 0 || !result.hoursInRange ? 'over' : 'fits'}`}>
                         <strong>{daysLabel(selection.days)} {range(selection.start, selection.end, timeFormat)}</strong>
                         {result.overrunMinutes > 0
                             ? <> — doesn't fit. Closest: runs <strong>{result.overrunMinutes} min</strong> past {formatTime(selection.end, timeFormat)} on {result.perDay.filter(d => d.overrunMinutes === result.overrunMinutes).map(d => d.day).join(', ')}.</>
                             : <> — fits.</>}
                         {' '}{result.perDay.map(d => `${d.day} ends ${formatTime(d.endTime, timeFormat)}`).join(' · ')}
                         {' '}· {result.meetingPatterns} meeting pattern{result.meetingPatterns !== 1 ? 's' : ''}
+                        <div className="bf-hours">
+                            {result.lectureRequired > 0 && <>Lecture {result.lectureHours} of {result.lectureRequired} hrs</>}
+                            {result.lectureRequired > 0 && result.labRequired > 0 && ' · '}
+                            {result.labRequired > 0 && <>Lab {result.labHours} of {result.labRequired} hrs</>}
+                            {!result.hoursInRange && <strong> — no placement in this block keeps the hours within 1% over / 2% under</strong>}
+                        </div>
                     </div>
                 )
             )}

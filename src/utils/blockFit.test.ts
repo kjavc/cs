@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { meetingsPerWeekday, generateSchedule, parseTimeToMinutes } from './scheduleGenerator';
-import { computeBlockFit, BlockFitResult } from './blockFit';
+import { computeBlockFit, BlockFitResult, hoursInRange } from './blockFit';
 import { blockScheduleFor, blockOptionsFor, familiesIn, familyFor, weeklyHoursOf } from './blockSchedule';
 import { parseAttendanceAccountingRules } from './ruleParser';
 import { academicCalendar } from '../types/calendar';
@@ -26,6 +26,7 @@ test('DFST 101 (3.5 lec / 0.5 lab) in MW 8:00-10:30, Fall 2026 full term', () =>
     expect(r.perDay.map(d => d.endTime)).toEqual(['10:25', '10:20']);
     expect(r.overrunMinutes).toBe(0);
     expect(r.meetingPatterns).toBe(3);
+    expect(r).toMatchObject({ lectureHours: 62.9, lectureRequired: 63, labHours: 27.2, labRequired: 27, hoursInRange: true });
 
     const schedule = generateSchedule(
         { lectureUnits: 3.5, lectureDays: r.lectureDays, labUnits: 0.5, labDays: r.labDays, lecTbaHours: 0, labTbaHours: 0 },
@@ -46,6 +47,21 @@ test('reports the closest it can get when nothing fits', () => {
     expect(r.lectureHoursPerDay).toEqual({ Mon: 1.1 });
     expect(r.overrunMinutes).toBe(15);
     expect(r.perDay[0]).toMatchObject({ endTime: '09:05', overrunMinutes: 15 });
+    // 0.1 CH steps over 17 meetings: 17.0 or 18.7 hours, neither within range — flagged
+    expect(r).toMatchObject({ lectureHours: 18.7, hoursInRange: false });
+});
+
+test('hours range: about 1% over, 2% under, per component', () => {
+    expect(hoursInRange(54.4, 54)).toBe(true);
+    expect(hoursInRange(55, 54)).toBe(false);
+    expect(hoursInRange(53.4, 54)).toBe(true);
+    expect(hoursInRange(52.7, 54)).toBe(false);
+});
+
+test('prefers hours in range over fitting the block', () => {
+    // 2.8 + 1.0 lecture would also fit MW 8:00-10:30, but 64.6 of 63 hours is too many
+    const r = fit(computeBlockFit(3.5, 0.5, ['Mon', 'Wed'], '08:00', '10:30', meetings('fa2026', 'full-term')));
+    expect(r.lectureHours).toBeLessThanOrEqual(63 * 1.01);
 });
 
 test('explains a course too small for every day of the block', () => {
@@ -107,6 +123,7 @@ test('every block option produces a schedule the generator accepts, ending where
                             context, o.start, null, { lectureHoursPerDay: r.lectureHoursPerDay, labHoursPerDay: r.labHoursPerDay }
                         );
                         expect(schedule.warnings.filter(w => w.startsWith('ERROR'))).toEqual([]);
+                        expect(r.hoursInRange).toBe((lec === 0 || hoursInRange(r.lectureHours, lec * 18)) && (lab === 0 || hoursInRange(r.labHours, lab * 54)));
                         for (const d of r.perDay) {
                             const last = Math.max(...schedule.scheduleBlocks.filter(b => b.dayOfWeek === d.day).map(b => parseTimeToMinutes(b.endTime)));
                             expect(last).toBe(parseTimeToMinutes(d.endTime));

@@ -140,6 +140,11 @@
   border-radius: var(--radius-md);
 }
 
+.bf-hours {
+  margin-top: 2px;
+  font-size: 0.72rem;
+}
+
 .bf-result.fits { background: var(--success-bg); color: var(--success-text); }
 .bf-result.over { background: var(--warning-bg); color: var(--warning-text); }
 .bf-result.error { background: var(--error-bg); color: var(--error-text); }

@@ -21,6 +21,13 @@ export interface BlockFitResult {
     // Minutes past the block's end on the worst day; 0 = fits
     overrunMinutes: number;
     meetingPatterns: number;
+    // Scheduled term contact hours vs the catalog's, per component
+    lectureHours: number;
+    labHours: number;
+    lectureRequired: number;
+    labRequired: number;
+    // False when no placement lands both components inside the preferred hours range
+    hoursInRange: boolean;
 }
 
 export interface BlockFitError {
@@ -31,6 +38,14 @@ export interface BlockFitError {
 const MAX_OVERRUN = 120;
 // Lecture and lab on the same day are separated by one break (same as the generator)
 const COMPONENT_GAP = 10;
+// Preferred range for each component's term hours around the catalog's: e.g. 54 → 52.9–54.5.
+// Over by more is pushing what's legally allowed; under is acceptable but closer is better.
+const HOURS_OVER = 0.01;
+const HOURS_UNDER = 0.02;
+
+export function hoursInRange(scheduled: number, required: number): boolean {
+    return scheduled <= required * (1 + HOURS_OVER) + 1e-9 && scheduled >= required * (1 - HOURS_UNDER) - 1e-9;
+}
 
 const clockCache: number[] = [];
 function clockMinutes(tenths: number): number {
@@ -47,6 +62,7 @@ interface Candidate {
     distinct: number; // distinct meeting lengths (x.1 and x.2 CH run the same length)
     deviation: number;
     shortfall: number;
+    inRange: boolean;
 }
 
 // The generator's custom-split acceptance check, with the same arithmetic in the same order,
@@ -143,17 +159,21 @@ interface Solution {
 // Best lecture/lab placement for a window of `window` minutes. Depends only on the window's
 // length, not its start, so every block of the same length shares one answer.
 function solve(lecRequired: number, labRequired: number, meetings: number[], window: number): Solution | null {
-    // Search with short meetings first. A best answer that overruns by no more than `extra`
-    // is the overall best: anything better overruns less, so all its meetings are in this pass.
-    for (const extra of [0, 30, 60, MAX_OVERRUN]) {
-        const found = solveWithin(lecRequired, labRequired, meetings, window, window + extra);
-        if (found && found.overrun <= extra) return found;
-        if (extra === MAX_OVERRUN) return found;
+    // Hours inside the preferred range come first, even if that means running past the block;
+    // only when no placement manages that do we fall back to anything the generator accepts.
+    for (const rangeOnly of [true, false]) {
+        // Search with short meetings first. A best answer that overruns by no more than `extra`
+        // is the overall best: anything better overruns less, so all its meetings are in this pass.
+        for (const extra of [0, 30, 60, MAX_OVERRUN]) {
+            const found = solveWithin(lecRequired, labRequired, meetings, window, window + extra, rangeOnly);
+            if (found && found.overrun <= extra) return found;
+            if (extra === MAX_OVERRUN && found) return found;
+        }
     }
     return null;
 }
 
-function solveWithin(lecRequired: number, labRequired: number, meetings: number[], window: number, maxMeetingMinutes: number): Solution | null {
+function solveWithin(lecRequired: number, labRequired: number, meetings: number[], window: number, maxMeetingMinutes: number, rangeOnly: boolean): Solution | null {
     const n = meetings.length;
     let capTenths = 10;
     while (clockMinutes(capTenths + 1) <= maxMeetingMinutes) capTenths++;
@@ -165,10 +185,11 @@ function solveWithin(lecRequired: number, labRequired: number, meetings: number[
             clocks: v.map(t => t ? clockMinutes(t) : 0),
             distinct: new Set(v.filter(t => t > 0).map(clockMinutes)).size,
             deviation: Math.round(Math.abs(total - required) * 100),
-            shortfall: Math.round(Math.max(0, required - total) * 100)
+            shortfall: Math.round(Math.max(0, required - total) * 100),
+            inRange: required <= 0 || hoursInRange(total, required)
         };
     // Simplest first, so a good answer turns up early and prunes the rest
-    }).sort((a, b) => a.distinct - b.distinct || Math.max(...a.clocks) - Math.max(...b.clocks));
+    }).filter(c => !rangeOnly || c.inRange).sort((a, b) => a.distinct - b.distinct || Math.max(...a.clocks) - Math.max(...b.clocks));
     const lecCands = prepare(componentCandidates(lecRequired, meetings, capTenths), lecRequired);
     const labCands = prepare(componentCandidates(labRequired, meetings, capTenths), labRequired);
 
@@ -266,12 +287,20 @@ export function computeBlockFit(
         return { day, lectureCH: lecCH, labCH, endTime: formatMinutes(start + length), overrunMinutes: Math.max(0, length - window) };
     });
 
+    const lectureHoursTotal = Math.round(scheduledTotal(best.lec, meetings) * 10) / 10;
+    const labHoursTotal = Math.round(scheduledTotal(best.lab, meetings) * 10) / 10;
+
     return {
         lectureDays: days.filter(d => lectureHoursPerDay[d] !== undefined),
         labDays: days.filter(d => labHoursPerDay[d] !== undefined),
         lectureHoursPerDay,
         labHoursPerDay,
         perDay,
+        lectureHours: lectureHoursTotal,
+        labHours: labHoursTotal,
+        lectureRequired: lecRequired,
+        labRequired,
+        hoursInRange: (lecRequired <= 0 || hoursInRange(lectureHoursTotal, lecRequired)) && (labRequired <= 0 || hoursInRange(labHoursTotal, labRequired)),
         overrunMinutes: best.overrun,
         meetingPatterns: best.patterns
     };

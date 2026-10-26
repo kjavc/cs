@@ -97,6 +97,9 @@ function App() {
                 const late = result.perDay.filter(d => d.overrunMinutes > 0).map(d => `${d.day} ends ${formatTime(d.endTime, timeFormat)}`).join(', ');
                 schedule.warnings.unshift(`Doesn't fit the block (ends ${formatTime(blockSelection.end, timeFormat)}): ${late} — up to ${result.overrunMinutes} min over. This is the closest fit.`);
               }
+              if (!result.hoursInRange) {
+                schedule.warnings.unshift(`Hours outside the preferred range (1% over / 2% under): lecture ${result.lectureHours} of ${result.lectureRequired}, lab ${result.labHours} of ${result.labRequired}.`);
+              }
               setGeneratedSchedule(schedule);
               setLastRequest(request);
             }

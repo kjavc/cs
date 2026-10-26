@@ -1,5 +1,5 @@
 {
-  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Corrections confirmed by scheduling: intersession 1-hr 2:30-2:20 -> 2:30-3:20; 12-week 5-hr MTWR 3:30-5:15 -> 3:30-5:05. Windows whose length did not match the rest of their column are listed under \"excluded\" and left out until confirmed.",
+  "_source": "16_12_8_and_6_week_block_schedule.xlsx (all sheets marked DRAFT). Times are 24h. Corrections confirmed by scheduling: intersession 1-hr 2:30-2:20 -> 2:30-3:20; 12-week 5-hr MTWR 3:30-5:15 -> 3:30-5:05, 12:45-3:20 -> 12:45-2:20; evening 6:30-7:20 PM -> 6:30-7:50 PM (all sheets). Windows whose length did not match the rest of their column are listed under \"excluded\" and left out until confirmed.",
   "schedules": [
     {
       "id": "16wk", "label": "16-week", "revised": "2022-11-23",
@@ -16,11 +16,8 @@
         {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["06:45-07:50", "08:00-09:05", "09:30-10:35", "11:00-12:05", "12:30-13:35", "14:00-15:05", "15:30-16:35", "17:00-18:05", "18:30-19:35", "20:00-21:05"]},
         {"weeklyHours": 5, "kind": "standard", "days": "SGL", "times": ["07:45-12:50", "13:00-18:05", "17:00-22:05"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MW|TR", "times": ["07:45-10:50", "09:30-12:35", "11:00-14:05", "12:30-15:35", "14:00-17:05", "17:00-20:05", "18:30-21:35", "19:15-22:20"]},
-        {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "19:30-20:50"]},
+        {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "18:30-19:50", "19:30-20:50"]},
         {"weeklyHours": 6, "kind": "lecLab", "days": "MW|TR", "times": ["07:45-10:50", "09:30-12:35", "11:00-14:05", "13:00-16:05", "14:30-17:35", "18:00-21:05", "18:30-21:35", "19:00-22:05", "19:15-22:20"]}
-      ],
-      "excluded": [
-        {"weeklyHours": 6, "days": "MTWR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"}
       ]
     },
     {
@@ -28,21 +25,19 @@
       "appliesTo": [{"termType": "semester", "sessionIds": ["late-12"]}],
       "families": [
         {"weeklyHours": 1, "kind": "standard", "days": "SGL", "times": ["08:00-09:20", "09:30-10:50", "11:00-12:20", "13:00-14:20", "14:30-15:50", "16:00-17:20", "17:30-18:50", "18:00-19:20", "19:30-20:50"]},
-        {"weeklyHours": 2, "kind": "standard", "days": "MW|TR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "19:30-20:50"]},
+        {"weeklyHours": 2, "kind": "standard", "days": "MW|TR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "18:30-19:50", "19:30-20:50"]},
         {"weeklyHours": 3, "kind": "standard", "days": "MW|TR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]},
         {"weeklyHours": 3, "kind": "standard", "days": "SGL", "times": ["08:00-12:35", "12:30-17:05", "18:00-22:35"]},
         {"weeklyHours": 3, "kind": "standard", "days": "MTWR", "times": ["06:45-07:50", "08:00-09:05", "09:30-10:35", "11:00-12:05", "12:30-13:35", "14:00-15:05", "15:30-16:35", "17:00-18:05", "18:30-19:35", "20:00-21:05"]},
         {"weeklyHours": 4, "kind": "standard", "days": "MW|TR", "times": ["07:45-10:50", "09:30-12:35", "11:00-14:05", "12:30-15:35", "14:00-17:05", "17:00-20:05", "18:30-21:35", "19:15-22:20"]},
         {"weeklyHours": 4, "kind": "standard", "days": "MTWR", "times": ["08:00-09:15", "09:30-10:45", "11:00-12:15", "12:30-13:45", "14:00-15:15", "15:30-16:45", "17:00-18:15", "18:30-19:45", "20:00-21:15"]},
         {"weeklyHours": 5, "kind": "standard", "days": "MW|TR", "times": ["08:00-11:35", "12:30-16:05", "17:00-20:35", "18:30-22:05"]},
-        {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["07:45-09:20", "09:30-11:05", "11:00-12:35", "15:30-17:05", "17:30-19:05", "18:30-20:05", "20:15-21:50"]},
+        {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["07:45-09:20", "09:30-11:05", "11:00-12:35", "12:45-14:20", "15:30-17:05", "17:30-19:05", "18:30-20:05", "20:15-21:50"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MW|TR", "times": ["07:45-12:10", "12:30-16:55", "17:30-21:55", "18:00-22:25"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]}
       ],
       "excluded": [
-        {"weeklyHours": 2, "days": "MW|TR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"},
-        {"weeklyHours": 4, "days": "MTWR", "start": "06:45", "end": "07:45", "reason": "60 min; the rest of this column is 75 min"},
-        {"weeklyHours": 5, "days": "MTWR", "start": "12:45", "end": "15:20", "reason": "155 min; the rest of this column is 95 min"}
+        {"weeklyHours": 4, "days": "MTWR", "start": "06:45", "end": "07:45", "reason": "Sheet says 6:45-7:45 (60 min); confirmed as 6:45-7:50 (65 min), but the rest of this column is 75 min"}
       ]
     },
     {
@@ -51,31 +46,24 @@
       "families": [
         {"weeklyHours": 1, "kind": "standard", "days": "MW|TR", "times": ["08:00-09:05", "09:30-10:35", "11:00-12:05", "13:00-14:05", "14:30-15:35", "16:00-17:05", "18:00-19:05"]},
         {"weeklyHours": 2, "kind": "standard", "days": "MW|TR", "times": ["08:00-10:05", "09:30-11:35", "10:15-12:20", "13:00-15:05", "15:15-17:20", "18:00-20:05"]},
-        {"weeklyHours": 3, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "19:30-20:50"]},
+        {"weeklyHours": 3, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "18:30-19:50", "19:30-20:50"]},
         {"weeklyHours": 3, "kind": "standard", "days": "MW|TR", "times": ["07:45-11:00", "09:30-12:45", "11:00-14:15", "12:30-15:45", "14:00-17:15", "17:00-20:15", "18:30-21:45", "19:15-22:30"]},
         {"weeklyHours": 4, "kind": "standard", "days": "MTWR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]},
         {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["08:00-10:25", "11:00-13:25", "14:00-16:25", "17:00-19:25", "19:45-22:10"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["07:45-10:55", "11:00-14:10", "14:30-17:40", "18:00-21:10"]},
         {"weeklyHours": 6, "kind": "lecLab", "days": "MTWR", "times": ["07:45-10:50", "11:00-14:05", "14:30-17:35", "18:00-21:05"]}
-      ],
-      "excluded": [
-        {"weeklyHours": 3, "days": "MTWR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"}
       ]
     },
     {
       "id": "6wk", "label": "6-week", "revised": "2022-11-28",
       "appliesTo": [{"termType": "intersession", "sessionIds": ["first-6", "second-6"]}],
       "families": [
-        {"weeklyHours": 1, "kind": "standard", "days": "MW|TR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "19:30-20:50"]},
-        {"weeklyHours": 2, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "19:30-20:50"]},
+        {"weeklyHours": 1, "kind": "standard", "days": "MW|TR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "18:30-19:50", "19:30-20:50"]},
+        {"weeklyHours": 2, "kind": "standard", "days": "MTWR", "times": ["06:30-07:50", "08:00-09:20", "09:30-10:50", "11:00-12:20", "12:30-13:50", "14:00-15:20", "15:30-16:50", "17:00-18:20", "18:30-19:50", "19:30-20:50"]},
         {"weeklyHours": 3, "kind": "standard", "days": "MTWR", "times": ["08:00-10:05", "10:15-12:20", "12:30-14:35", "14:45-16:50", "17:00-19:05", "19:15-21:20"]},
         {"weeklyHours": 4, "kind": "standard", "days": "MTWR", "times": ["07:45-10:50", "09:30-12:35", "11:00-14:05", "12:30-15:35", "14:00-17:05", "17:00-20:05", "18:30-21:35", "19:15-22:20"]},
         {"weeklyHours": 5, "kind": "standard", "days": "MTWR", "times": ["08:00-11:35", "12:30-16:05", "17:30-21:05", "18:30-22:05"]},
         {"weeklyHours": 6, "kind": "standard", "days": "MTWR", "times": ["07:45-12:10", "12:30-16:55", "17:30-21:55", "18:00-22:25"]}
-      ],
-      "excluded": [
-        {"weeklyHours": 1, "days": "MW|TR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"},
-        {"weeklyHours": 2, "days": "MTWR", "start": "18:30", "end": "19:20", "reason": "50 min; the rest of this column is 80 min"}
       ]
     },
     {

@@ -43,7 +43,7 @@ Optional additive fields — missing = legacy behavior:
 ## Block Fit Mode (spec `docs/spec-block-fit.md`)
 - Third mode next to Manual / Smart Split: pick a window from the block schedule, `computeBlockFit` (`src/utils/blockFit.ts`) places lecture + lab inside it; closest fit with overrun when it doesn't fit
 - Block data: `src/data/block-schedule.json` (from the college's xlsx); session → sheet via `appliesTo`, read by `blockScheduleFor` (`src/utils/blockSchedule.ts`). Family = `lec + 3 × lab` weekly hours, fractional rounds up. `lecLab` columns replace same-day standard columns for lec+lab courses
-- Candidates must pass the generator's own custom-split check (`generatorAccepts` mirrors its arithmetic) — keep them in sync if that check changes
+- Candidates must pass the generator's own custom-split check (`generatorAccepts` mirrors its arithmetic) — keep them in sync if that check changes. On top of that, Block Fit prefers each component within 2% under / 1% over catalog hours (`hoursInRange`), falling back with a flag
 - Workspace-only state (`blockFit`, `blockSelection`); saves as a fixed manual split like Smart Split. Shared view logic in `useBlockFitMode`
 
 ## Schedule Splitter (`src/splitter/`)
