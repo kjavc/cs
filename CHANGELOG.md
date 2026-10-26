@@ -7,6 +7,8 @@ Newest first. Each entry: what changed, why, and anything left open. Read the **
 ## Handoff (current state)
 
 - **Branches:** `main` holds everything. `gh-pages` serves the live app and is only updated by `npm run deploy` (builds and publishes `build/` via the `gh-pages` package). Merging to `main` does **not** update the live site.
+- **Last deploy:** 2026-10-26, from `main` at `762e5eb` (Block Fit + 6:45 slot fix) → `gh-pages` `fb4fab8`. A cloud session can deploy (`npm install`, then `npm run deploy`).
+- **`homepage` in `package.json`** still points to the old account (`kjcc99.github.io/cs`). Builds only use its path (`/cs/`), so it works on `kjavc.github.io/cs`; update it if the site ever moves to a different path or domain.
 - **Project notes:** `CLAUDE.md` (architecture, rules, conventions). Specs live in `docs/` (`spec-block-fit.md`, `spec-smart-split.md`, `spec-schedule-splitter.md`, `spec-schedule-roll.md`).
 - **Tests:** `CI=true npx react-scripts test --watchAll=false`. `src/App.test.tsx` is the CRA boilerplate test and fails (`window.matchMedia` isn't defined in jsdom). It failed before Block Fit; everything else passes.
 - **Lockfile:** `npm ci` fails because `package-lock.json` is out of sync (`yaml@2.9.1` missing). `npm install` works; the lockfile hasn't been regenerated in these changes.
