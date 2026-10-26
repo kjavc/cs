@@ -40,12 +40,23 @@ Optional additive fields — missing = legacy behavior:
 - Workspace/`SavedSection.fixedHours` carries it; units hold hour equivalents (h/18, h/54) only so "has lecture/lab" checks work — never compute hours from them
 - Splitter: `classifyFixedHours`; roll shifts the single date by the term-start gap, snapped to the same weekday, and flags holidays
 
+## Block Fit Mode (spec `docs/spec-block-fit.md`)
+- Third mode next to Manual / Smart Split: pick a window from the block schedule, `computeBlockFit` (`src/utils/blockFit.ts`) places lecture + lab inside it; closest fit with overrun when it doesn't fit
+- Block data: `src/data/block-schedule.json` (from the college's xlsx); session → sheet via `appliesTo`, read by `blockScheduleFor` (`src/utils/blockSchedule.ts`). Family = `lec + 3 × lab` weekly hours, fractional rounds up. `lecLab` columns replace same-day standard columns for lec+lab courses
+- Hours are estimates with their own range (`src/utils/blockHours.ts`, a week = catalog hrs / 18, per component): full-term semester = catalog ± 1 week; any shorter session targets catalog − 1 week, accepting −1.5 / +0.5 week around that. Confirmed by the user — this is the one sanctioned exception to the contact-hour rules above
+- Saved Block Fit sections carry `hoursRule: 'blockFit'`; the generator's custom-split check uses the Block Fit range only for those (pass `overrides.hoursRule` wherever a saved section is regenerated). Manual / Smart Split keep the standard ±0.05 CH/day/week
+- Workspace-only state (`blockFit`, `blockSelection`, `hoursRule`); saves as a fixed manual split like Smart Split. Shared view logic in `useBlockFitMode`
+- Spreadsheet export: uneven sections (custom split / per-day times / lab following lecture on shared days) export one row per meeting pattern from the generator's blocks
+
 ## Schedule Splitter (`src/splitter/`)
 - Paste → Review → Results pipeline; spec in `docs/spec-schedule-splitter.md`
 - Roll mode (`roll.ts`, spec `docs/spec-schedule-roll.md`): copies a term to the same season of a later year — re-dates by session, re-checks units against the target catalog, recomputes end times, flags UNITS/HOURS/CONFLICT in column AB, dropped courses go to a separate Can't-roll list
 - Term → catalog mapping lives only in `src/utils/catalogForTerm.ts` (`isFallback` when the AY has no catalog yet — every AY27-28 term today)
 - Banner exports one row per instructor on a meeting pattern. Rows identical except ID/Faculty are one pattern: `uniqueMeetingRows` counts hours/days once, `instructorsOf` emits split output once per instructor. Don't sum `HRS_TTL` over raw rows.
 - TSV in/out must follow Excel quoting: `splitTsvRecords` (parseTsv.ts) reads quoted cells that contain tabs/newlines/`""`; `escapeTsvCell` (pipeline.ts) quotes such cells on export. Don't replace with plain `split('\n')` / `join('\t')` — that silently drops rows on paste into Excel.
+
+## Change Log & Handoff
+- `CHANGELOG.md` (repo root): what changed, when, and open items for the next session. Add an entry with each change set.
 
 ## Commands
 - `npm start` — dev server on port 3000

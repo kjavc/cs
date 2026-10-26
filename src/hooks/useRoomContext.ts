@@ -81,6 +81,7 @@ export function useRoomContext({
                 labTimesPerDay: section.labTimeMode === 'perDay' ? (section.labTimesPerDay as Record<string, string>) : undefined,
                 lectureHoursPerDay: section.lectureSplitMode === 'custom' ? (section.lectureHoursPerDay as Record<string, number>) : undefined,
                 labHoursPerDay: section.labSplitMode === 'custom' ? (section.labHoursPerDay as Record<string, number>) : undefined,
+                hoursRule: section.hoursRule,
             };
 
             const schedule = generateSchedule(request, context, section.startTime, section.labStartTime, overrides);

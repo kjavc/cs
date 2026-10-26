@@ -50,6 +50,10 @@ const faqs: FAQItem[] = [
     answer: "If a component (lecture or lab) meets on 2 or more days, a \"Custom Split\" button appears below the units and days area. Click it to set a different end time for each day — for example, a shorter meeting on Monday and a longer one on Wednesday. The app shows the contact hours for each day and a running total so you can balance them. Each day must have at least 1.0 contact hour. If the math doesn't work for your unit/day combination, the button will say \"unavailable\" and explain why."
   },
   {
+    question: "How do I fit a course into the block schedule?",
+    answer: "Switch to Block Fit at the top of the configuration. Pick your term, session, and course; the app works out its weekly hours (lecture units + 3 × lab units) and lists that family's blocks from the block schedule. Each choice shows ✓ if the lecture and lab fit inside it, or +N min if the closest fit runs over. Click one to place the course — lecture first, lab after a 10-minute break on shared days. Block Fit covers full-term, 12-week and 8-week fall/spring sessions, 8- and 6-week summer sessions, and winter. Hours are estimates: a full-term fall/spring course aims for its catalog hours (within a week either way); shorter sessions aim for one week less. Switch back to Manual to fine-tune; the fitted schedule carries over."
+  },
+  {
     question: "Can I move meetings by dragging on the calendar?",
     answer: "Yes! Once a schedule is on the grid, you can click and drag any block to change its start time. A normal drag moves all days for that component together. Hold Shift while dragging to move just one day independently (this enables per-day start times). The block snaps to 5-minute increments. If you drag it over another block on the same day, it will turn red — you need at least a 10-minute gap between lecture and lab."
   },

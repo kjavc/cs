@@ -46,4 +46,10 @@ export interface SavedSection {
 
     // Fixed-hours course (e.g. WELD 900). Missing = units-based.
     fixedHours?: FixedHours;
+
+    // Saved from Block Fit: custom splits are checked against the Block Fit hours range
+    // (src/utils/blockHours.ts) instead of the standard tolerance. Missing = standard.
+    hoursRule?: HoursRule;
 }
+
+export type HoursRule = 'blockFit';

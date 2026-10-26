@@ -85,6 +85,14 @@ interface MobileConfigProps {
     setSmartSplitDays: (v: string[]) => void;
     canSmartSplit: boolean;
     onSmartSplitToggle: (enabled: boolean) => void;
+    blockFit: boolean;
+    canBlockFit: boolean;
+    onBlockFitToggle: (enabled: boolean, keepResult?: boolean) => void;
+    blockFitPanel: React.ReactNode;
+    blockLabel?: string;
+    // Block Fit range (CH/week) when the manual split came from Block Fit
+    lecAcceptWeekly?: { target: number; min: number; max: number };
+    labAcceptWeekly?: { target: number; min: number; max: number };
 }
 
 export const MobileConfig: React.FC<MobileConfigProps> = ({
@@ -114,7 +122,8 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
     labRoomId, setLabRoomId,
     smartSplit, setSmartSplit,
     smartSplitDays, setSmartSplitDays,
-    canSmartSplit, onSmartSplitToggle
+    canSmartSplit, onSmartSplitToggle,
+    blockFit, canBlockFit, onBlockFitToggle, blockFitPanel, blockLabel, lecAcceptWeekly, labAcceptWeekly
 }) => {
     const weeks = selectedSession.weeks || 1;
     // Fixed-hours courses meet once, so the whole total is due on the one day
@@ -174,6 +183,7 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                         <div className="mc-summary-text">
                             Scheduling <strong>{selectedTerm.name}</strong> ({selectedSession.name}) at <strong>{formatTime(startTime, timeFormat)}</strong>
                             {selectedCourseInfo ? ` • ${selectedCourseInfo.sub} ${selectedCourseInfo.no}` : ''}
+                            {blockFit && blockLabel ? ` • ${blockLabel}` : ''}
                         </div>
                         <button className="mc-edit-btn">
                             <Edit2 size={16} /> Edit
@@ -196,17 +206,24 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
 
                         <div className="config-mode-toggle" style={{ padding: '4px 16px 0' }}>
                             <button
-                                className={`mode-btn ${!smartSplit ? 'active' : ''}`}
-                                onClick={() => smartSplit && onSmartSplitToggle(false)}
+                                className={`mode-btn ${!smartSplit && !blockFit ? 'active' : ''}`}
+                                onClick={() => { if (smartSplit) onSmartSplitToggle(false); if (blockFit) onBlockFitToggle(false); }}
                             >
                                 Manual
                             </button>
                             <button
                                 className={`mode-btn ${smartSplit ? 'active' : ''}`}
-                                onClick={() => !smartSplit && onSmartSplitToggle(true)}
+                                onClick={() => { if (!smartSplit) { if (blockFit) onBlockFitToggle(false, false); onSmartSplitToggle(true); } }}
                                 disabled={!canSmartSplit}
                             >
                                 Smart Split
+                            </button>
+                            <button
+                                className={`mode-btn ${blockFit ? 'active' : ''}`}
+                                onClick={() => { if (!blockFit) onBlockFitToggle(true); }}
+                                disabled={!canBlockFit}
+                            >
+                                Block Fit
                             </button>
                         </div>
 
@@ -222,7 +239,7 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                             </div>
                         </div>
 
-                        <div className="mc-section">
+                        {!blockFit && <div className="mc-section">
                             <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4 }}>
                                 <label>Start Times</label>
                                 {!smartSplit && (
@@ -301,7 +318,7 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                     </>
                                 )}
                             </div>
-                        </div>
+                        </div>}
 
                         <div className="mc-section">
                             <label>Course Catalog</label>
@@ -325,10 +342,18 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                 smartSplit={smartSplit}
                                 smartSplitDays={smartSplitDays}
                                 setSmartSplitDays={setSmartSplitDays}
+                                blockFit={blockFit}
                             />
                         </div>
 
-                        {!smartSplit && ((lectureUnits > 0 && lectureDays.length >= 2) || (labUnits > 0 && labDays.length >= 2)) && (
+                        {blockFit && (
+                            <div className="mc-section">
+                                <label>Block</label>
+                                {blockFitPanel}
+                            </div>
+                        )}
+
+                        {!smartSplit && !blockFit && ((lectureUnits > 0 && lectureDays.length >= 2) || (labUnits > 0 && labDays.length >= 2)) && (
                             <div className="mc-section">
                                 <label>Uneven Splits</label>
                                 {lectureUnits > 0 && lectureDays.length >= 2 && (
@@ -340,7 +365,8 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                         hoursPerDay={lectureHoursPerDay}
                                         setHoursPerDay={setLectureHoursPerDay}
                                         startTimeForDay={lecStartForDay}
-                                        weeklyRequiredCH={lecWeeklyCH}
+                                        weeklyRequiredCH={lecAcceptWeekly?.target ?? lecWeeklyCH}
+                                        acceptWeeklyRange={lecAcceptWeekly}
                                         timeFormat={timeFormat}
                                     />
                                 )}
@@ -353,7 +379,8 @@ export const MobileConfig: React.FC<MobileConfigProps> = ({
                                         hoursPerDay={labHoursPerDay}
                                         setHoursPerDay={setLabHoursPerDay}
                                         startTimeForDay={labStartForDay}
-                                        weeklyRequiredCH={labWeeklyCH}
+                                        weeklyRequiredCH={labAcceptWeekly?.target ?? labWeeklyCH}
+                                        acceptWeeklyRange={labAcceptWeekly}
                                         timeFormat={timeFormat}
                                     />
                                 )}

@@ -15,6 +15,10 @@ import {
 } from '../../types';
 import { generateSchedule, meetingsPerWeekday } from '../../utils/scheduleGenerator';
 import { computeSmartSplit } from '../../utils/smartSplit';
+import { daysLabel } from '../../utils/blockSchedule';
+import { formatTime } from '../../utils/timeUtils';
+import { useBlockFitMode } from '../../hooks/useBlockFitMode';
+import BlockFitPicker from '../BlockFitPicker';
 import { formatScheduleSimple, formatScheduleDetailed, formatBulkExport, copyToClipboard } from '../../utils/copyUtils';
 import { generateShareUrl } from '../../utils/shareUtils';
 
@@ -71,8 +75,14 @@ export const MobileView: React.FC<AppViewProps> = ({
         lastRequest, setLastRequest,
         selectedCourseInfo, handleCourseSelect, fixedHours, setFixedHours,
         getWorkspaceAsSection, isCalculating, clearCourseSelection,
-        smartSplit, setSmartSplit, smartSplitDays, setSmartSplitDays
+        smartSplit, setSmartSplit, smartSplitDays, setSmartSplitDays,
+        blockFit, setBlockFit, blockSelection, setBlockSelection, hoursRule, setHoursRule
     } = workspaceAPI;
+
+    const {
+        sheet: blockSheet, session: blockSession, meetingsByDay: blockMeetings, fullSemester: blockFullSemester, canBlockFit, lecAcceptWeekly, labAcceptWeekly,
+        blockFitResult, selectBlock, handleBlockFitToggle, blockFitSectionFields
+    } = useBlockFitMode({ workspaceAPI, settingsAPI, calendar, attendanceRules, showToast });
 
     // UI States
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -105,6 +115,17 @@ export const MobileView: React.FC<AppViewProps> = ({
             sectionName = `${sub} ${no} ${sectionNum}`;
         }
 
+        const blockFields = blockFitSectionFields();
+        if (blockFields) {
+            saveSection({
+                lectureUnits, labUnits, selectedTermId, selectedSessionId, ...blockFields,
+                lectureBuildingId, lectureRoomId, labBuildingId, labRoomId,
+                ...(currentSectionId ? {} : { name: sectionName })
+            });
+            showToast("Section saved. Block Fit sections save as fixed schedules — edits will use Manual mode.", "info");
+            return;
+        }
+
         if (smartSplit && smartSplitDays.length > 0) {
             const selTerm = calendar.find(t => t.id === selectedTermId) || calendar[0];
             const selSession = selTerm.sessions.find(s => s.id === selectedSessionId) || selTerm.sessions[0];
@@ -132,10 +153,11 @@ export const MobileView: React.FC<AppViewProps> = ({
         saveSection({
             lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, fixedHours, startTime, labStartTime, selectedTermId, selectedSessionId,
             ...(usesV2 ? { schemaVersion: 2 as const, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId } : {}),
+            ...(hoursRule ? { hoursRule } : {}),
             ...(currentSectionId ? {} : { name: sectionName })
         });
         showToast(currentSectionId ? "Updated" : "Saved");
-    }, [saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, currentSectionId, smartSplit, smartSplitDays, calendar, attendanceRules, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId, showToast]);
+    }, [saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, currentSectionId, smartSplit, smartSplitDays, calendar, attendanceRules, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId, showToast, blockFitSectionFields, hoursRule]);
 
     const handleSaveAsNew = useCallback(() => {
         if (lectureUnits === 0 && labUnits === 0) {
@@ -151,19 +173,34 @@ export const MobileView: React.FC<AppViewProps> = ({
             sectionName = `${sub} ${no} ${sectionNum}`;
         }
 
+        const blockFields = blockFitSectionFields();
+        if (blockFields) {
+            saveSection({
+                lectureUnits, labUnits, selectedTermId, selectedSessionId, ...blockFields,
+                lectureBuildingId, lectureRoomId, labBuildingId, labRoomId,
+                name: sectionName
+            }, true);
+            showToast("Saved as new copy");
+            return;
+        }
+
         const usesV2 = lectureTimeMode === 'perDay' || labTimeMode === 'perDay' || lectureSplitMode === 'custom' || labSplitMode === 'custom' || !!lectureRoomId || !!labRoomId;
         saveSection({
             lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, fixedHours, startTime, labStartTime, selectedTermId, selectedSessionId,
             ...(usesV2 ? { schemaVersion: 2 as const, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId } : {}),
+            ...(hoursRule ? { hoursRule } : {}),
             name: sectionName
         }, true);
         showToast("Saved as new copy");
-    }, [saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, showToast]);
+    }, [blockFitSectionFields, hoursRule, saveSection, lectureUnits, lectureDays, lecTbaHours, labUnits, labDays, labTbaHours, startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, selectedCourseInfo, fixedHours, savedSections, showToast]);
 
 
     const handleLoadSection = useCallback((section: SavedSection) => {
         setSmartSplit(false);
         setSmartSplitDays([]);
+        setBlockFit(false);
+        setBlockSelection(null);
+        setHoursRule(section.hoursRule);
         setCurrentSectionId(section.id);
         setLectureUnits(section.lectureUnits);
         setLectureDays(section.lectureDays);
@@ -203,13 +240,14 @@ export const MobileView: React.FC<AppViewProps> = ({
                 labTimesPerDay: section.labTimeMode === 'perDay' ? (section.labTimesPerDay as Record<string, string>) : undefined,
                 lectureHoursPerDay: section.lectureSplitMode === 'custom' ? (section.lectureHoursPerDay as Record<string, number>) : undefined,
                 labHoursPerDay: section.labSplitMode === 'custom' ? (section.labHoursPerDay as Record<string, number>) : undefined,
+                hoursRule: section.hoursRule,
             };
             setGeneratedSchedule(generateSchedule(request, context, section.startTime, section.labStartTime, overrides));
             setLastRequest(request);
         }
         setIsSidebarOpen(false);
         setIsConfigExpanded(false);
-    }, [contactHourRules, attendanceRules, calendar, setCurrentSectionId, setLectureUnits, setLectureDays, setLecTbaHours, setLabUnits, setLabDays, setLabTbaHours, setFixedHours, setStartTime, setLabStartTime, setSelectedTermId, setSelectedSessionId, setLectureTimeMode, setLabTimeMode, setLectureTimesPerDay, setLabTimesPerDay, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay, setGeneratedSchedule, setLastRequest]);
+    }, [setBlockFit, setBlockSelection, setHoursRule, contactHourRules, attendanceRules, calendar, setCurrentSectionId, setLectureUnits, setLectureDays, setLecTbaHours, setLabUnits, setLabDays, setLabTbaHours, setFixedHours, setStartTime, setLabStartTime, setSelectedTermId, setSelectedSessionId, setLectureTimeMode, setLabTimeMode, setLectureTimesPerDay, setLabTimesPerDay, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay, setGeneratedSchedule, setLastRequest]);
 
     const toggleOverlay = (id: string) => {
         setOverlaySectionIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -263,6 +301,11 @@ export const MobileView: React.FC<AppViewProps> = ({
 
     const handleBlockMove = useCallback((event: BlockMoveEvent) => {
         const { type, fromDay, toDay, newStartTime, isPerDayMove } = event;
+
+        if (blockFit) {
+            showToast("Block Fit keeps times inside the block — switch to Manual to drag.", "info");
+            return;
+        }
 
         if (smartSplit) {
             if (fromDay === toDay) {
@@ -320,7 +363,7 @@ export const MobileView: React.FC<AppViewProps> = ({
                 setTimesPerDay({});
             }
         }
-    }, [smartSplit, smartSplitDays, setSmartSplitDays, lectureDays, labDays, setLectureDays, setLabDays, lectureTimeMode, labTimeMode, setLectureTimeMode, setLabTimeMode, lectureTimesPerDay, labTimesPerDay, setLectureTimesPerDay, setLabTimesPerDay, startTime, labStartTime, setStartTime, setLabStartTime, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay]);
+    }, [blockFit, showToast, smartSplit, smartSplitDays, setSmartSplitDays, lectureDays, labDays, setLectureDays, setLabDays, lectureTimeMode, labTimeMode, setLectureTimeMode, setLabTimeMode, lectureTimesPerDay, labTimesPerDay, setLectureTimesPerDay, setLabTimesPerDay, startTime, labStartTime, setStartTime, setLabStartTime, setLectureSplitMode, setLabSplitMode, setLectureHoursPerDay, setLabHoursPerDay]);
 
     const handleCopy = (summaryType: ExportType) => {
         if (!generatedSchedule) return;
@@ -333,7 +376,7 @@ export const MobileView: React.FC<AppViewProps> = ({
             if (selectedCourseInfo) name = `${selectedCourseInfo.sub} ${selectedCourseInfo.no} 01`;
             else if (currentSectionId) name = savedSections.find(s => s.id === currentSectionId)?.name || name;
 
-            const temp = getWorkspaceAsSection('temp', name, { startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId });
+            const temp = { ...getWorkspaceAsSection('temp', name, { startTime, labStartTime, selectedTermId, selectedSessionId, lectureTimeMode, labTimeMode, lectureTimesPerDay, labTimesPerDay, lectureSplitMode, labSplitMode, lectureHoursPerDay, labHoursPerDay, lectureBuildingId, lectureRoomId, labBuildingId, labRoomId }), ...blockFitSectionFields() };
             text = exportForSpreadsheet([temp], calendar, attendanceRules);
             toastMsg = "Section copied (Spreadsheet)!";
         } else if (summaryType === 'simple') {
@@ -421,6 +464,9 @@ export const MobileView: React.FC<AppViewProps> = ({
         setLabRoomId('');
         setSmartSplit(false);
         setSmartSplitDays([]);
+        setBlockFit(false);
+        setBlockSelection(null);
+        setHoursRule(undefined);
         showToast("Ready for new section", "info");
     };
 
@@ -544,6 +590,26 @@ export const MobileView: React.FC<AppViewProps> = ({
                     setSmartSplitDays={setSmartSplitDays}
                     canSmartSplit={canSmartSplit}
                     onSmartSplitToggle={handleSmartSplitToggle}
+                    blockFit={blockFit}
+                    canBlockFit={canBlockFit}
+                    onBlockFitToggle={handleBlockFitToggle}
+                    lecAcceptWeekly={lecAcceptWeekly}
+                    labAcceptWeekly={labAcceptWeekly}
+                    blockLabel={blockSelection ? `${daysLabel(blockSelection.days)} ${formatTime(blockSelection.start, timeFormat)}–${formatTime(blockSelection.end, timeFormat)}` : undefined}
+                    blockFitPanel={
+                        <BlockFitPicker
+                            sheet={blockSheet}
+                            session={blockSession}
+                            lectureUnits={lectureUnits}
+                            labUnits={labUnits}
+                            meetingsByDay={blockMeetings}
+                                fullSemester={blockFullSemester}
+                            selection={blockSelection}
+                            onSelect={selectBlock}
+                            result={blockFitResult}
+                            timeFormat={timeFormat}
+                        />
+                    }
                 />
 
                 <ScheduleDisplay

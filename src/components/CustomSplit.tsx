@@ -26,12 +26,14 @@ interface CustomSplitProps {
     setHoursPerDay: (v: Record<string, number>) => void;
     startTimeForDay: (day: string) => string;
     weeklyRequiredCH: number;
+    // Block Fit sections accept a range around their target instead of the exact total
+    acceptWeeklyRange?: { min: number; max: number };
     timeFormat: '12h' | '24h';
 }
 
 const CustomSplit: React.FC<CustomSplitProps> = ({
     label, days, splitMode, setSplitMode, hoursPerDay, setHoursPerDay,
-    startTimeForDay, weeklyRequiredCH, timeFormat
+    startTimeForDay, weeklyRequiredCH, acceptWeeklyRange, timeFormat
 }) => {
     const numDays = days.length;
     const evenPerDay = numDays > 0 ? Math.round((weeklyRequiredCH / numDays) * 10) / 10 : 0;
@@ -90,7 +92,9 @@ const CustomSplit: React.FC<CustomSplitProps> = ({
     }
 
     const sumCH = days.reduce((acc, d) => acc + (hoursPerDay[d] ?? 0), 0);
-    const diffCH = Math.round((sumCH - weeklyRequiredCH) * 10) / 10;
+    const diffCH = acceptWeeklyRange
+        ? Math.round((sumCH < acceptWeeklyRange.min ? sumCH - acceptWeeklyRange.min : sumCH > acceptWeeklyRange.max ? sumCH - acceptWeeklyRange.max : 0) * 10) / 10
+        : Math.round((sumCH - weeklyRequiredCH) * 10) / 10;
     const totalValid = Math.abs(diffCH) <= 0.05;
 
     return (
@@ -124,7 +128,11 @@ const CustomSplit: React.FC<CustomSplitProps> = ({
                 })}
             </div>
             <div className={`cs-footer ${totalValid ? 'valid' : 'invalid'}`}>
-                <div>Total: {sumCH.toFixed(1)} / {weeklyRequiredCH.toFixed(1)} CH/week {totalValid ? '✓' : '✗'}</div>
+                <div>
+                    Total: {sumCH.toFixed(1)} / {weeklyRequiredCH.toFixed(1)} CH/week
+                    {acceptWeeklyRange && <> (Block Fit range {acceptWeeklyRange.min.toFixed(1)}–{acceptWeeklyRange.max.toFixed(1)})</>}
+                    {' '}{totalValid ? '✓' : '✗'}
+                </div>
                 {!totalValid && (
                     <div className="cs-footer-hint">{chDiffToPlainText(diffCH)}</div>
                 )}
