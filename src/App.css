@@ -1,0 +1,222 @@
+/* src/App.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root {
+  /* Nordic Slate Palette (Light) */
+  --bg-base: #e5e7eb;
+  --bg-canvas: #e5e7eb;
+  --bg-card: #ffffff;
+  --bg-inset: #d1d5db;
+  --bg-well: #f1f5f9;
+
+  --text-main: #18181b;
+  --text-muted: #71717a;
+
+  --primary: #1e3a8a;
+  --primary-hover: #172554;
+
+  --lecture-color: #1e3a8a;
+  --lecture-bg: rgba(30, 58, 138, 0.12);
+  --lab-color: #064e3b;
+  --lab-bg: rgba(6, 78, 59, 0.12);
+  --danger-color: #991b1b;
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --error-bg: #fee2e2;
+  --error-text: #991b1b;
+  --info-bg: #dbeafe;
+  --info-text: #1e40af;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+
+  --border-color: #d4d4d8;
+
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms ease;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  --bg-base: #1c1917;
+  --bg-canvas: #1c1917;
+  --bg-card: #292524;
+  --bg-inset: #12100e;
+  --bg-well: #12100e;
+
+  --text-main: #e7e5e4;
+  --text-muted: #a8a29e;
+
+  --primary: #f59e0b;
+  --primary-hover: #d97706;
+
+  --lecture-color: #38bdf8;
+  --lecture-bg: rgba(56, 189, 248, 0.1);
+  --lab-color: #10b981;
+  --lab-bg: rgba(16, 185, 129, 0.1);
+  --danger-color: #ef4444;
+  --success-bg: #064e3b;
+  --success-text: #dcfce7;
+  --error-bg: #7f1d1d;
+  --error-text: #fee2e2;
+  --info-bg: #1e3a8a;
+  --info-text: #dbeafe;
+  --warning-bg: #78350f;
+  --warning-text: #fef3c7;
+
+  --border-color: #44403c;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  overflow: hidden;
+  /* Lock body scroll for dashboard */
+}
+
+/* Accessibility: Skip Link (Hidden until Tabbed) */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary);
+  color: white;
+  padding: 12px 24px;
+  z-index: 2000;
+  transition: top var(--transition-normal);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Base Layout Shell */
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Scrollbars */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+/* Global Buttons */
+button {
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.primary-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+}
+
+.secondary-button {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Animation Keys */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal Base Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background-color: var(--bg-card);
+  padding: 32px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='dark'] .modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}

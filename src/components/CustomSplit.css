@@ -1,0 +1,104 @@
+.custom-split-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.custom-split-wrapper.active {
+    background: var(--bg-subtle, rgba(0,0,0,0.03));
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.cs-toggle {
+    background: transparent;
+    border: 1px dashed var(--border-color, #bbb);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--text-muted, #666);
+    align-self: flex-start;
+}
+.cs-toggle:hover:not(:disabled) { border-style: solid; color: var(--text-main); }
+.cs-toggle:disabled { opacity: 0.5; cursor: not-allowed; }
+.cs-toggle.on {
+    background: var(--primary, #3a7);
+    color: white;
+    border-style: solid;
+    border-color: var(--primary, #3a7);
+}
+
+.cs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.cs-title { font-size: 0.78rem; font-weight: 600; }
+.cs-header-actions { display: flex; gap: 6px; }
+.cs-reset {
+    background: transparent;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+.cs-reset:hover { background: var(--bg-hover, #eee); }
+
+.cs-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.cs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+.cs-row.invalid {
+    background: rgba(200, 50, 50, 0.08);
+}
+.cs-day { font-weight: 600; min-width: 34px; }
+.cs-start { color: var(--text-muted, #666); font-variant-numeric: tabular-nums; }
+.cs-arrow { color: var(--text-muted, #888); }
+.cs-ch-badge {
+    font-size: 0.72rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--bg-card, #fff);
+    border: 1px solid var(--border-color, #ccc);
+    font-variant-numeric: tabular-nums;
+}
+.cs-row.invalid .cs-ch-badge {
+    color: #c33;
+    border-color: #c33;
+}
+
+.cs-footer {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+.cs-footer.valid { color: var(--success, #2a7); }
+.cs-footer.invalid { color: var(--danger, #c33); }
+
+.cs-footer-hint {
+    font-weight: 400;
+    font-size: 0.74rem;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.cs-unavailable-hint {
+    font-size: 0.72rem;
+    color: var(--text-muted, #888);
+    font-style: italic;
+}

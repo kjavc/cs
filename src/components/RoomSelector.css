@@ -1,0 +1,36 @@
+.room-selector-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.room-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 10px;
+}
+
+.room-selector-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.room-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.room-pair select {
+    font-size: 0.8rem;
+    min-width: 80px;
+}
+
+.room-no-division {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: 4px 0;
+}

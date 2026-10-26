@@ -1,0 +1,147 @@
+/* src/components/CourseInput.css */
+
+.course-input-panel {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.lecture-panel,
+.lab-panel {
+  padding: 6px 12px;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s;
+  flex: 0 1 auto;
+}
+
+.ci-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ci-panel-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ci-controls {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.micro-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.lecture-panel {
+  background-color: rgba(30, 58, 138, 0.05);
+}
+
+.lab-panel {
+  background-color: rgba(6, 78, 59, 0.05);
+}
+
+.lecture-panel.active {
+  background-color: rgba(30, 58, 138, 0.08);
+}
+
+.lab-panel.active {
+  background-color: rgba(6, 78, 59, 0.08);
+}
+
+.lec-label {
+  color: var(--primary) !important;
+  opacity: 1 !important;
+}
+
+.lab-label {
+  color: var(--lab-color) !important;
+  opacity: 1 !important;
+}
+
+/* Custom Unit Selector inside panels */
+.unit-selector-container {
+  margin-bottom: 0;
+}
+
+.add-tba-link {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+
+.add-tba-link:hover {
+  color: var(--primary);
+}
+
+.tba-input-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.tba-number-input {
+  width: 50px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  text-align: center;
+}
+
+.tba-number-input.error {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.tba-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 2px;
+}
+
+.tba-close-btn:hover {
+  color: #ef4444;
+}
+
+.tba-error-text {
+  color: #ef4444;
+  font-size: 0.65rem;
+  font-weight: 600;
+  margin-top: 4px;
+  max-width: 120px;
+  line-height: 1.2;
+}
+
+.tba-max-hint {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  opacity: 0.8;
+  margin-left: 4px;
+  margin-top: auto;
+  margin-bottom: auto;
+}

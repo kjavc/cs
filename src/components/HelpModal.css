@@ -1,0 +1,82 @@
+/* src/components/HelpModal.css */
+
+.help-modal {
+  max-width: 650px;
+}
+
+.faq-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--bg-well);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: left;
+}
+
+.faq-question:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.faq-answer {
+  padding: 0 20px 20px 20px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.settings-close-btn {
+  background: var(--bg-inset);
+  border: none;
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-close-btn:hover {
+  background: var(--bg-canvas);
+  color: var(--text-main);
+  transform: rotate(90deg);
+}
+
+
+.modal-footer {
+  margin-top: 20px;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  text-align: center;
+}

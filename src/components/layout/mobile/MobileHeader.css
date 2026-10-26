@@ -1,0 +1,130 @@
+.mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(60px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 16px 0 16px;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    user-select: none;
+}
+
+.mh-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mh-title-area {
+    display: flex;
+    flex-direction: column;
+}
+
+.mh-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.mh-catalog-notice {
+    font-size: 0.65rem;
+    color: var(--text-muted, #888);
+    font-style: italic;
+    margin-top: 2px;
+}
+
+.mh-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: max-content;
+}
+
+.mh-badge.valid {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.mh-badge.warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+.mh-badge.error {
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.mh-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mh-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mh-btn:active {
+    background: var(--bg-inset);
+}
+
+.mh-btn.primary {
+    color: var(--primary-color);
+    background: var(--primary-bg);
+}
+
+.mh-more {
+    position: relative;
+}
+
+.mh-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    /* Stronger shadow for dropdown */
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    z-index: 1000;
+}
+
+.mh-dropdown button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mh-dropdown button:last-child {
+    border-bottom: none;
+}
+
+.mh-dropdown button:active {
+    background: var(--bg-well);
+}

@@ -1,0 +1,65 @@
+/* src/components/DayPicker.css */
+
+.day-picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-presets {
+  display: flex;
+  gap: 3px;
+}
+
+.day-preset-btn {
+  background: transparent;
+  border: 1px dashed var(--border-color, #555);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.58rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-muted, #888);
+  letter-spacing: 0.02em;
+}
+.day-preset-btn:hover { border-style: solid; color: var(--text-main); }
+.day-preset-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+.day-picker-container {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.day-picker-item {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+  color: var(--text-main);
+}
+
+.day-picker-item:hover {
+  background-color: var(--bg-canvas);
+  border-color: var(--primary);
+}
+
+.day-picker-item.selected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}

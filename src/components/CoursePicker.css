@@ -1,0 +1,193 @@
+/* src/components/CoursePicker.css */
+
+.course-picker-container {
+  position: relative;
+}
+
+.picker-trigger-wrapper {
+  display: flex;
+  position: relative;
+  align-items: center;
+  width: 100%;
+}
+
+.picker-trigger {
+  width: 100%;
+  padding: 0 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  height: 32px;
+  transition: all 0.2s;
+}
+
+.picker-trigger-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  height: 100%;
+}
+
+.picker-trigger:hover {
+  background-color: var(--bg-well);
+  border-color: var(--primary);
+}
+
+.picker-trigger:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-color: var(--primary);
+}
+
+.picker-clear-btn {
+  position: absolute;
+  right: 6px;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+.picker-clear-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.picker-clear-btn:hover {
+  background: var(--bg-inset);
+  color: var(--danger-color, #ef4444);
+}
+
+.picker-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1000;
+  width: 380px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.2s ease-out;
+}
+
+.picker-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-well);
+}
+
+.picker-search-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.clear-search {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.picker-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.picker-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background-color: var(--bg-inset);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.picker-breadcrumb button {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.picker-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.picker-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  font-size: 0.9rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+}
+
+.picker-item:hover,
+.picker-item:focus-visible {
+  background-color: var(--bg-well);
+  outline: none;
+}
+
+.picker-item.course {
+  flex-direction: row;
+  align-items: center;
+}
+
+.course-identity {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.course-identity strong {
+  color: var(--primary);
+}
+
+.course-identity span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+}

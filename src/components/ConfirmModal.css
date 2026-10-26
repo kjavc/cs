@@ -1,0 +1,31 @@
+/* src/components/ConfirmModal.css */
+
+.confirm-modal-content {
+  max-width: 400px;
+}
+
+.confirm-modal-content h3 {
+  margin-top: 0;
+  color: var(--primary);
+}
+
+.confirm-modal-message {
+  margin: 20px 0;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  border-color: var(--danger-color) !important;
+  color: var(--danger-color) !important;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(153, 27, 27, 0.05) !important;
+}

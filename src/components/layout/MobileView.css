@@ -1,0 +1,61 @@
+/* src/components/layout/MobileView.css */
+
+.mobile-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  position: relative;
+}
+
+.mv-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.mv-tabs {
+  display: flex;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 16px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  gap: 12px;
+}
+
+.mv-tabs button {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid transparent;
+  background: var(--bg-inset);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.mv-tabs button.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Override for hero card centering on mobile */
+.mobile-view .empty-hero-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
