@@ -12,11 +12,16 @@ Newest first. Each entry: what changed, why, and anything left open. Read the **
 - **Lockfile:** `npm ci` fails because `package-lock.json` is out of sync (`yaml@2.9.1` missing). `npm install` works; the lockfile hasn't been regenerated in these changes.
 
 ### Open items
-1. **Block schedule, 12-week 4-hour MTWR early slot.** Sheet says 6:45–7:45; scheduling said 6:45–7:50, but that's 65 min in a 75-min column (8:00–9:15, …). Left out of `block-schedule.json` (`excluded`) until settled — likely 6:30–7:45 or 6:45–8:00.
-2. **"1.5 weeks under" for short sessions** is measured from the target (catalog − 1 week), giving 54 hrs → 46.5–52.5. If it should be measured from the catalog total instead (→ 49.5–52.5), change `SHORT_UNDER_WEEKS` handling in `src/utils/blockHours.ts`.
-3. **Block sheets are marked DRAFT** (revised 2022–2026). When scheduling publishes a new version, update `src/data/block-schedule.json` (format notes in `docs/spec-block-fit.md`).
-4. **Sidebar end-time labels** assume an even split, so custom-split sections (Smart Split, Block Fit, manual custom) show approximate end times there. Pre-existing.
-5. Manual / Smart Split still use the standard generator tolerance (±0.05 CH per meeting day per week), which can allow a component a few percent over catalog hours on a full term. Left as-is on purpose; Block Fit has its own range.
+1. **"1.5 weeks under" for short sessions** is measured from the target (catalog − 1 week), giving 54 hrs → 46.5–52.5. If it should be measured from the catalog total instead (→ 49.5–52.5), change `SHORT_UNDER_WEEKS` handling in `src/utils/blockHours.ts`.
+2. **Block sheets are marked DRAFT** (revised 2022–2026). When scheduling publishes a new version, update `src/data/block-schedule.json` (format notes in `docs/spec-block-fit.md`).
+3. **Sidebar end-time labels** assume an even split, so custom-split sections (Smart Split, Block Fit, manual custom) show approximate end times there. Pre-existing.
+4. Manual / Smart Split still use the standard generator tolerance (±0.05 CH per meeting day per week), which can allow a component a few percent over catalog hours on a full term. Left as-is on purpose; Block Fit has its own range.
+
+---
+
+## 2026-10-26 — Block schedule: 12-week 4-hour 6:45 AM slot removed
+
+- The 12-week sheet's 4-hour MTWR "6:45 - 7:45" was an error on the spreadsheet (confirmed by scheduling): the slot doesn't exist and would conflict with other blocks. It was never offered; `block-schedule.json` now records it as a confirmed error instead of pending.
 
 ---
 

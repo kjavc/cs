@@ -29,9 +29,9 @@ Block Fit produces exactly this.
 - Each sheet lists **families** by weekly hours (1–6). Weekly hours = catalog hours ÷ 18 = `lec + 3 × lab`. Fractional hours use the next family up (3.5 → 4).
 - Day codes: `SGL` (any one weekday M–F), `MW|TR`, `MWF|TRF`, `MTWR`, `MTWRF`. "Sgl Session or Lab" = `SGL`; "Lab 2/wk" = `MW|TR`; the 12-week 1-hour column has no day label and is `SGL` (its hours only work out for one day a week).
 - `kind: "lecLab"`: the 6-hour **Lecture/Lab** columns. These are unadvertised but standard for 6-hour lec/lab courses (DM, ART). For a course with both lecture and lab, they replace the standard column with the same days. On the 16-week sheet the lec/lab starts are 1:00 PM (not 12:30), 2:30 PM (not 2:00), and 6:00 or 7:00 PM (not 5:00), per scheduling.
-- `excluded`: windows whose length doesn't match the rest of their column (probable typos), left out until confirmed.
+- `excluded`: sheet errors confirmed by scheduling; never offered.
 - Fixes applied (confirmed): intersession 1-hour "2:30 - 2:20" → 2:30–3:20; 12-week 5-hour MTWR "3:30 - 5:15" → 3:30–5:05 and "12:45 - 3:20" → 12:45–2:20; evening "6:30 - 7:20" PM → 6:30–7:50 PM on every sheet.
-- Still excluded: 12-week 4-hour MTWR "6:45 - 7:45" (confirmed as 6:45–7:50, but that's 65 min in a 75-min column).
+- Removed (sheet error, confirmed): 12-week 4-hour MTWR "6:45 - 7:45" — the slot doesn't exist and would conflict with other blocks.
 
 ### Session → sheet
 
