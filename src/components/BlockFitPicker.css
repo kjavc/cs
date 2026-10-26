@@ -1,0 +1,150 @@
+/* src/components/BlockFitPicker.css */
+
+.block-fit-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.bf-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.bf-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.bf-course {
+  font-size: 0.8rem;
+  color: var(--text-main);
+}
+
+.bf-families {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.bf-family {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.bf-family.course {
+  border-style: solid;
+  color: var(--text-main);
+}
+
+.bf-family.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  border-style: solid;
+  color: #fff;
+}
+
+.bf-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.bf-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bf-group-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.bf-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bf-time {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 112px;
+  color: var(--text-main);
+}
+
+.bf-variants {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.bf-variant {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.bf-variant .bf-status {
+  display: inline-flex;
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+.bf-variant.fits .bf-status { color: var(--success-text); }
+.bf-variant.over .bf-status { color: var(--warning-text); }
+.bf-variant.error { opacity: 0.45; cursor: not-allowed; }
+
+.bf-variant.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.bf-variant.selected .bf-status { color: #fff; }
+
+.bf-variant:not(.selected):not(:disabled):hover {
+  background: var(--bg-card);
+}
+
+.bf-result {
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+}
+
+.bf-result.fits { background: var(--success-bg); color: var(--success-text); }
+.bf-result.over { background: var(--warning-bg); color: var(--warning-text); }
+.bf-result.error { background: var(--error-bg); color: var(--error-text); }
+
+/* Phones scroll the whole config panel; no nested scroll box */
+@media (max-width: 768px) {
+  .bf-groups { max-height: none; }
+}

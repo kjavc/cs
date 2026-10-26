@@ -3,6 +3,7 @@ import { ScheduleRequest } from '../components/CourseInput';
 import { GeneratedSchedule } from '../types';
 import { Course, fixedHoursOf } from './useCatalog';
 import { FixedHours } from '../types/section';
+import { BlockOption } from '../utils/blockSchedule';
 
 
 export function useWorkspace() {
@@ -32,8 +33,13 @@ export function useWorkspace() {
     const [smartSplit, setSmartSplit] = useState(false);
     const [smartSplitDays, setSmartSplitDays] = useState<string[]>([]);
 
+    const [blockFit, setBlockFit] = useState(false);
+    const [blockSelection, setBlockSelection] = useState<BlockOption | null>(null);
+
     const handleCourseSelect = useCallback((sub: string, course: Course) => {
         setSelectedCourseInfo({ sub, no: course.no, title: course.title });
+        // A different course can mean a different block family
+        setBlockSelection(null);
 
         // Auto-populate units (handle fixed number or {min, max} object)
         const lecVal = course.lec;
@@ -53,6 +59,7 @@ export function useWorkspace() {
             setLabUnits(labEq);
             setSmartSplit(false);
             setSmartSplitDays([]);
+            setBlockFit(false);
             return;
         }
 
@@ -84,6 +91,8 @@ export function useWorkspace() {
         setLabTbaHours(0);
         setSmartSplit(false);
         setSmartSplitDays([]);
+        setBlockFit(false);
+        setBlockSelection(null);
     }, []);
 
     const getWorkspaceAsSection = useCallback((id: string, name: string, settings: any) => {
@@ -135,6 +144,8 @@ export function useWorkspace() {
         fixedHours, setFixedHours,
         smartSplit, setSmartSplit,
         smartSplitDays, setSmartSplitDays,
+        blockFit, setBlockFit,
+        blockSelection, setBlockSelection,
         handleCourseSelect, clearCourseSelection,
         getWorkspaceAsSection
     };

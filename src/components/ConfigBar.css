@@ -69,8 +69,18 @@
   border-right: none;
 }
 
+.config-mode-toggle .mode-btn:not(:first-child):not(:last-child) {
+  border-right: none;
+}
+
 .config-mode-toggle .mode-btn:last-child {
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.block-fit-start {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 28px;
 }
 
 .config-mode-toggle .mode-btn.active {

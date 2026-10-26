@@ -37,6 +37,8 @@ interface CourseInputProps {
   smartSplit?: boolean;
   smartSplitDays?: string[];
   setSmartSplitDays?: (v: string[]) => void;
+  // Block Fit picks the days, so only the units show
+  blockFit?: boolean;
   fixedHours?: FixedHours;
 }
 
@@ -54,6 +56,7 @@ const CourseInput: React.FC<CourseInputProps> = ({
   smartSplit = false,
   smartSplitDays = [],
   setSmartSplitDays,
+  blockFit = false,
   fixedHours
 }) => {
   const maxLecContactHours = lectureUnits * 18;
@@ -89,7 +92,7 @@ const CourseInput: React.FC<CourseInputProps> = ({
     setSmartSplitDays(newDays);
   };
 
-  if (smartSplit && setSmartSplitDays) {
+  if ((smartSplit && setSmartSplitDays) || blockFit) {
     return (
       <div className="course-input-panel">
         <div className={`ci-panel lecture-panel ${activePanel === 'lecture' ? 'active' : ''}`}
@@ -120,16 +123,20 @@ const CourseInput: React.FC<CourseInputProps> = ({
           </div>
         </div>
 
-        <div className="config-divider" />
+        {smartSplit && setSmartSplitDays && (
+          <>
+            <div className="config-divider" />
 
-        <div className="ci-panel smart-split-days-panel">
-          <label className="ci-panel-label">Meeting Days</label>
-          <div className="ci-controls">
-            <div className="time-sub-group">
-              <DayPicker selectedDays={smartSplitDays} onDayToggle={handleSmartSplitDayToggle} onSetDays={setSmartSplitDays} />
+            <div className="ci-panel smart-split-days-panel">
+              <label className="ci-panel-label">Meeting Days</label>
+              <div className="ci-controls">
+                <div className="time-sub-group">
+                  <DayPicker selectedDays={smartSplitDays} onDayToggle={handleSmartSplitDayToggle} onSetDays={setSmartSplitDays} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     );
   }

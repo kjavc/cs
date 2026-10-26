@@ -76,6 +76,12 @@ interface ConfigBarProps {
     setSmartSplitDays: (v: string[]) => void;
     canSmartSplit: boolean;
     onSmartSplitToggle: (enabled: boolean) => void;
+    // Block Fit
+    blockFit: boolean;
+    canBlockFit: boolean;
+    onBlockFitToggle: (enabled: boolean, keepResult?: boolean) => void;
+    blockFitPanel: React.ReactNode;
+    blockLabel?: string;
     // Room assignment
     buildings: Building[];
     hasDivision: boolean;
@@ -123,6 +129,7 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
     labHoursPerDay, setLabHoursPerDay,
     smartSplit, setSmartSplit, smartSplitDays, setSmartSplitDays,
     canSmartSplit, onSmartSplitToggle,
+    blockFit, canBlockFit, onBlockFitToggle, blockFitPanel, blockLabel,
     buildings, hasDivision,
     lectureBuildingId, setLectureBuildingId,
     lectureRoomId, setLectureRoomId,
@@ -190,6 +197,7 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
                             Scheduling <strong>{selectedTerm.name}</strong> ({selectedSession.name})
                             starting at <strong>{formatTime(startTime, timeFormat)}</strong>
                             {labStartTime && <> (Labs at <strong>{formatTime(labStartTime, timeFormat)}</strong>)</>}
+                            {blockFit && blockLabel && <> in block <strong>{blockLabel}</strong>{' '}</>}
                             • <strong>{lectureUnits}u</strong> Lec / <strong>{labUnits}u</strong> Lab
                             {/* ROOMS: hidden until feature ships
                             {lectureRoomLabel && <> • {lectureRoomLabel}</>}
@@ -211,18 +219,26 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
                         {/* Mode Toggle */}
                         <div className="config-mode-toggle">
                             <button
-                                className={`mode-btn ${!smartSplit ? 'active' : ''}`}
-                                onClick={() => { if (smartSplit) onSmartSplitToggle(false); }}
+                                className={`mode-btn ${!smartSplit && !blockFit ? 'active' : ''}`}
+                                onClick={() => { if (smartSplit) onSmartSplitToggle(false); if (blockFit) onBlockFitToggle(false); }}
                             >
                                 Manual
                             </button>
                             <button
                                 className={`mode-btn ${smartSplit ? 'active' : ''}`}
-                                onClick={() => { if (!smartSplit) onSmartSplitToggle(true); }}
+                                onClick={() => { if (!smartSplit) { if (blockFit) onBlockFitToggle(false, false); onSmartSplitToggle(true); } }}
                                 disabled={!canSmartSplit}
                                 title={!canSmartSplit ? 'Smart Split requires both lecture and lab units' : 'Automatically distribute lecture and lab across selected days'}
                             >
                                 Smart Split
+                            </button>
+                            <button
+                                className={`mode-btn ${blockFit ? 'active' : ''}`}
+                                onClick={() => { if (!blockFit) onBlockFitToggle(true); }}
+                                disabled={!canBlockFit}
+                                title={!canBlockFit ? 'Block Fit needs lecture or lab units (not available for fixed-hours courses)' : 'Fit lecture and lab into a block from the block schedule'}
+                            >
+                                Block Fit
                             </button>
                         </div>
 
@@ -250,8 +266,8 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
 
                             <div className="config-section">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '10px', gap: '8px' }}>
-                                    <label className="config-label" style={{ lineHeight: 1 }}>Start Time{!smartSplit && 's'}</label>
-                                    {!smartSplit && (
+                                    <label className="config-label" style={{ lineHeight: 1 }}>Start Time{!smartSplit && !blockFit && 's'}</label>
+                                    {!smartSplit && !blockFit && (
                                         <div style={{ display: 'flex', gap: '4px' }}>
                                             <button
                                                 onClick={toggleLectureTimeMode}
@@ -280,7 +296,12 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
                                     )}
                                 </div>
                                 <div className="config-controls">
-                                    {smartSplit ? (
+                                    {blockFit ? (
+                                        <div className="time-sub-group">
+                                            <span className="micro-label">&nbsp;</span>
+                                            <span className="block-fit-start">{blockLabel ? formatTime(startTime, timeFormat) : 'Set by block'}</span>
+                                        </div>
+                                    ) : smartSplit ? (
                                         <div className="time-sub-group">
                                             <span className="micro-label">&nbsp;</span>
                                             <TimeSelector time={startTime} onTimeChange={setStartTime} timeFormat={timeFormat} />
@@ -390,6 +411,7 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
                                 smartSplit={smartSplit}
                                 smartSplitDays={smartSplitDays}
                                 setSmartSplitDays={setSmartSplitDays}
+                                blockFit={blockFit}
                             />
 
                             <button className="icon-btn-collapse" onClick={() => setIsConfigExpanded(false)} title="Collapse configuration" aria-label="Collapse configuration">
@@ -397,7 +419,13 @@ const ConfigBar: React.FC<ConfigBarProps> = ({
                             </button>
                         </div>
 
-                        {!smartSplit && ((lectureUnits > 0 && lectureDays.length >= 2) || (labUnits > 0 && labDays.length >= 2)) ? (
+                        {blockFit && (
+                            <div className="config-edit-row tertiary-row">
+                                {blockFitPanel}
+                            </div>
+                        )}
+
+                        {!smartSplit && !blockFit && ((lectureUnits > 0 && lectureDays.length >= 2) || (labUnits > 0 && labDays.length >= 2)) ? (
                             <div className="config-edit-row tertiary-row">
                                 {lectureUnits > 0 && lectureDays.length >= 2 && (
                                     <CustomSplit

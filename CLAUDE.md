@@ -40,6 +40,12 @@ Optional additive fields — missing = legacy behavior:
 - Workspace/`SavedSection.fixedHours` carries it; units hold hour equivalents (h/18, h/54) only so "has lecture/lab" checks work — never compute hours from them
 - Splitter: `classifyFixedHours`; roll shifts the single date by the term-start gap, snapped to the same weekday, and flags holidays
 
+## Block Fit Mode (spec `docs/spec-block-fit.md`)
+- Third mode next to Manual / Smart Split: pick a window from the block schedule, `computeBlockFit` (`src/utils/blockFit.ts`) places lecture + lab inside it; closest fit with overrun when it doesn't fit
+- Block data: `src/data/block-schedule.json` (from the college's xlsx); session → sheet via `appliesTo`, read by `blockScheduleFor` (`src/utils/blockSchedule.ts`). Family = `lec + 3 × lab` weekly hours, fractional rounds up. `lecLab` columns replace same-day standard columns for lec+lab courses
+- Candidates must pass the generator's own custom-split check (`generatorAccepts` mirrors its arithmetic) — keep them in sync if that check changes
+- Workspace-only state (`blockFit`, `blockSelection`); saves as a fixed manual split like Smart Split. Shared view logic in `useBlockFitMode`
+
 ## Schedule Splitter (`src/splitter/`)
 - Paste → Review → Results pipeline; spec in `docs/spec-schedule-splitter.md`
 - Roll mode (`roll.ts`, spec `docs/spec-schedule-roll.md`): copies a term to the same season of a later year — re-dates by session, re-checks units against the target catalog, recomputes end times, flags UNITS/HOURS/CONFLICT in column AB, dropped courses go to a separate Can't-roll list
